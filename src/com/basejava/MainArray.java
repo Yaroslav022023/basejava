@@ -1,11 +1,9 @@
 package com.basejava;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MainArray {
-    private static final String NOT_FOUND = "The entered resume was not found";
-    private static final String RESUME_TITLE = "\nEnter a resume to ";
-    private static final String DONE = "The resume was successfully ";
     public static void main(String[] args) {
         ArrayStorage arrayStorage = new ArrayStorage();
         Scanner scanner = new Scanner(System.in);
@@ -67,17 +65,17 @@ public class MainArray {
 
     private static void save(ArrayStorage arrayStorage, Scanner scanner) {
         System.out.print("\nEnter a new resume: ");
-        arrayStorage.save(scanner.nextLine());
-        System.out.println(DONE + "added.");
+        arrayStorage.save(new Resume(scanner.nextLine()));
+        System.out.println("The resume was successfully added.");
     }
 
     private static void get(ArrayStorage arrayStorage, Scanner scanner) {
-        System.out.print(RESUME_TITLE + "search: ");
+        System.out.print("\nEnter a resume to search: ");
         String resume = scanner.nextLine();
         if (arrayStorage.get(resume) != null) {
             System.out.println(arrayStorage.get(resume));
         } else {
-            System.out.println(NOT_FOUND + ".");
+            System.out.println("The entered resume was not found.");
         }
     }
 
@@ -85,17 +83,14 @@ public class MainArray {
         if (arrayStorage.getSize() == 0) {
             System.out.println("The resume database is empty.");
         } else {
-            arrayStorage.getAll();
+            System.out.println(Arrays.toString(arrayStorage.getAll())
+                    .replaceAll("^\\[|\\]$", ""));
         }
     }
 
     private static void delete(ArrayStorage arrayStorage, Scanner scanner) {
-        System.out.print(RESUME_TITLE + "delete: ");
-        if (arrayStorage.delete(scanner.nextLine())) {
-            System.out.println(DONE + "deleted.");
-        } else {
-            System.out.println(NOT_FOUND + " for deletion.");
-        }
+        System.out.print("\nEnter a resume to delete: ");
+        arrayStorage.delete(scanner.nextLine());
     }
 
     private static void clear(ArrayStorage arrayStorage) {
