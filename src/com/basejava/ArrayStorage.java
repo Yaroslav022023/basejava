@@ -1,6 +1,5 @@
 package com.basejava;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.Arrays;
 
 public class ArrayStorage {
