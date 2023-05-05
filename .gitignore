@@ -1,0 +1,9 @@
+/out
+*.class
+
+#Intellij IDEA
+/.idea
+*.iml
+
+#MacOS files:
+*.DS_Store
