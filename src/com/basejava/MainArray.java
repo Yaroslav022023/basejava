@@ -80,11 +80,11 @@ public class MainArray {
     }
 
     private static void getAll(ArrayStorage arrayStorage) {
-        if (arrayStorage.getSize() == 0) {
-            System.out.println("The resume database is empty.");
-        } else {
+        if (arrayStorage.getSize() > 0) {
             System.out.println(Arrays.toString(arrayStorage.getAll())
                     .replaceAll("^\\[|\\]$", ""));
+        } else {
+            System.out.println("The resume database is empty.");
         }
     }
 
