@@ -1,30 +1,53 @@
-/**
- * Array based storage for Resumes
- */
+import java.util.Arrays;
+
 public class ArrayStorage {
-    Resume[] storage = new Resume[10000];
+    private static final int CAPACITY = 10000;
+    Resume[] storage = new Resume[CAPACITY];
+    private int countResumes;
 
-    void clear() {
+    public void clear() {
+        Arrays.fill(storage, 0, countResumes, null);
+        countResumes = 0;
     }
 
-    void save(Resume r) {
+    public void save(Resume resume) {
+        for (int i = 0; i < countResumes; i++) {
+            if (resume.toString().equals(storage[i].getUuid())) {
+                System.out.println("This resume already added.");
+                return;
+            }
+        }
+        storage[countResumes] = resume;
+        countResumes++;
     }
 
-    Resume get(String uuid) {
+    public Resume get(String uuid) {
+        for (int i = 0; i < countResumes; i++) {
+            if (uuid.equals(storage[i].getUuid())) {
+                return storage[i];
+            }
+        }
         return null;
     }
 
-    void delete(String uuid) {
+    public void delete(String uuid) {
+        for (int i = 0; i < countResumes; i++) {
+            if (uuid.equals(storage[i].getUuid())) {
+                countResumes--;
+                System.arraycopy(storage, i + 1, storage, i, countResumes - i);
+                storage[countResumes] = null;
+                System.out.println("The resume was successfully deleted.");
+                return;
+            }
+        }
+        System.out.println("The entered resume was not found for deletion.");
     }
 
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    Resume[] getAll() {
-        return new Resume[0];
+    public Resume[] getAll() {
+        return Arrays.copyOf(storage, countResumes);
     }
 
-    int size() {
-        return 0;
+    public int getSize() {
+        return countResumes;
     }
 }

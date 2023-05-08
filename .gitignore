@@ -1,10 +1,10 @@
 /out
 *.class
+log
 
 #Intellij IDEA
 /.idea
 *.iml
-log
 
 #MacOS files:
 *.DS_Store

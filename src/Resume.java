@@ -1,10 +1,9 @@
-/**
- * Initial resume class
- */
 public class Resume {
+     public String uuid;
 
-    // Unique identifier
-    String uuid;
+    public String getUuid() {
+        return uuid;
+    }
 
     @Override
     public String toString() {
