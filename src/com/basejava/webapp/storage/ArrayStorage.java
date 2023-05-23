@@ -7,9 +7,9 @@ import java.util.Arrays;
 public class ArrayStorage {
     private static final int CAPACITY = 10000;
     private static final String NOT_FOUND = " - entered resume was not found";
-    Resume[] storage = new Resume[CAPACITY];
     private int countResumes;
-    private int numberElement;
+    private int elementExistingResume;
+    Resume[] storage = new Resume[CAPACITY];
 
     public Resume[] getAll() {
         return Arrays.copyOf(storage, countResumes);
@@ -36,8 +36,8 @@ public class ArrayStorage {
     public void delete(String uuid) {
         if (checkUuid(uuid)) {
             countResumes--;
-            System.arraycopy(storage, numberElement + 1, storage,
-                    numberElement, countResumes - numberElement);
+            System.arraycopy(storage, elementExistingResume + 1, storage,
+                    elementExistingResume, countResumes - elementExistingResume);
             storage[countResumes] = null;
             System.out.println("The resume '" + uuid + "' was successfully deleted.");
             return;
@@ -47,7 +47,7 @@ public class ArrayStorage {
 
     public Resume get(String uuid) {
         if (checkUuid(uuid)) {
-            return storage[numberElement];
+            return storage[elementExistingResume];
         }
         System.out.println(uuid + NOT_FOUND);
         return null;
@@ -60,16 +60,16 @@ public class ArrayStorage {
 
     public void update(Resume resume, Resume newResume) {
         if (checkUuid(resume.toString())) {
-            storage[numberElement].setUuid(newResume.toString());
+            storage[elementExistingResume].setUuid(newResume.toString());
             return;
         }
         System.out.println(resume + NOT_FOUND);
     }
 
-    public boolean checkUuid(String uuid) {
+    private boolean checkUuid(String uuid) {
         for (int i = 0; i < countResumes; i++) {
             if (uuid.equals(storage[i].getUuid())) {
-                numberElement = i;
+                elementExistingResume = i;
                 return true;
             }
         }
