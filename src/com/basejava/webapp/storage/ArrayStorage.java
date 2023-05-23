@@ -1,3 +1,7 @@
+package com.basejava.webapp.storage;
+
+import com.basejava.webapp.model.Resume;
+
 import java.util.Arrays;
 
 public class ArrayStorage {
@@ -11,9 +15,14 @@ public class ArrayStorage {
     }
 
     public void save(Resume resume) {
+        if (countResumes == CAPACITY) {
+            System.out.println("The resume storage is full");
+            return;
+        }
+
         for (int i = 0; i < countResumes; i++) {
             if (resume.toString().equals(storage[i].getUuid())) {
-                System.out.println("This resume already added.");
+                System.out.println("The resume '" + resume + "' already added.");
                 return;
             }
         }
@@ -36,11 +45,11 @@ public class ArrayStorage {
                 countResumes--;
                 System.arraycopy(storage, i + 1, storage, i, countResumes - i);
                 storage[countResumes] = null;
-                System.out.println("The resume was successfully deleted.");
+                System.out.println("The resume '" + uuid + "' was successfully deleted.");
                 return;
             }
         }
-        System.out.println("The entered resume was not found for deletion.");
+        System.out.println("The entered resume '" + uuid + "' was not found for deletion.");
     }
 
     public Resume[] getAll() {
@@ -49,5 +58,15 @@ public class ArrayStorage {
 
     public int getSize() {
         return countResumes;
+    }
+
+    public void update(Resume resume, Resume newResume) {
+        for (int i = 0; i < countResumes; i++) {
+            if (resume.equals(storage[i])) {
+                storage[i].setUuid(newResume.toString());
+                return;
+            }
+        }
+        System.out.println("Entered resume: '" + resume + "' was not found for update.");git 
     }
 }
