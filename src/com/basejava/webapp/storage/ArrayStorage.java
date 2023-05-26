@@ -37,6 +37,8 @@ public class ArrayStorage {
             storage[index] = storage[countResumes];
             storage[countResumes] = null;
             System.out.println("The resume '" + uuid + "' was successfully deleted.");
+        } else {
+            outputMessageNotExistResume(uuid);
         }
     }
 
@@ -45,6 +47,7 @@ public class ArrayStorage {
         if (index >= 0) {
             return storage[index];
         }
+        outputMessageNotExistResume(uuid);
         return null;
     }
 
@@ -57,6 +60,8 @@ public class ArrayStorage {
         int index = getIndex(resume.getUuid());
         if (index >= 0) {
             storage[index] = resume;
+        } else {
+            outputMessageNotExistResume(resume.getUuid());
         }
     }
 
@@ -67,5 +72,9 @@ public class ArrayStorage {
             }
         }
         return -1;
+    }
+
+    private void outputMessageNotExistResume(String uuid) {
+        System.out.println("Entered resume '" + uuid + "' not exist");
     }
 }

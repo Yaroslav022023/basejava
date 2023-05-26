@@ -29,7 +29,7 @@ public class MainTestArrayStorage {
         printAll();
         ARRAY_STORAGE.delete(r1.uuid);
         printAll();
-        ARRAY_STORAGE.update(r1); // for update method
+        ARRAY_STORAGE.update(r1); // for 'update' method in ArrayStorage
         printAll();
         ARRAY_STORAGE.clear();
         printAll();
