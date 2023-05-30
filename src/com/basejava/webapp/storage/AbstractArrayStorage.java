@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 public abstract class AbstractArrayStorage implements Storage{
     private static final int CAPACITY = 10000;
-    public final Resume[] storage = new Resume[CAPACITY];
-    public int countResumes;
+    protected final Resume[] storage = new Resume[CAPACITY];
+    protected int countResumes;
 
     public Resume[] getAll() {
         return Arrays.copyOf(storage, countResumes);
