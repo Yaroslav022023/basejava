@@ -20,7 +20,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         } else {
             int stepIndex = Math.abs(index);
             System.arraycopy(sortedStorage, stepIndex - 1, sortedStorage, stepIndex, (countResumes - (stepIndex - 1)));
-            sortedStorage[Math.abs(index) - 1] = resume;
+            sortedStorage[stepIndex - 1] = resume;
             countResumes++;
         }
     }
