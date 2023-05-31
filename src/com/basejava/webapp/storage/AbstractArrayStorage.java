@@ -5,9 +5,9 @@ import com.basejava.webapp.model.Resume;
 import java.util.Arrays;
 
 public abstract class AbstractArrayStorage implements Storage{
-    private static final int CAPACITY = 10000;
+    protected static final int CAPACITY = 5;
     protected final Resume[] storage = new Resume[CAPACITY];
-    protected int countResumes;
+    public int countResumes;
 
     public Resume[] getAll() {
         return Arrays.copyOf(storage, countResumes);
@@ -17,18 +17,7 @@ public abstract class AbstractArrayStorage implements Storage{
         return countResumes;
     }
 
-    public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
-
-        if (countResumes == CAPACITY) {
-            System.out.println("The resume storage is full");
-        } else if (index >= 0) {
-            System.out.println("Such resume '" + resume + "' already added.");
-        } else {
-            storage[countResumes] = resume;
-            countResumes++;
-        }
-    }
+    public abstract void save(Resume resume);
 
     public void delete(String uuid) {
         int index = getIndex(uuid);
@@ -65,7 +54,7 @@ public abstract class AbstractArrayStorage implements Storage{
         }
     }
 
-    protected abstract int getIndex(String uuid);
+    public abstract int getIndex(String uuid);
 
     private void outputMessageNotExistResume(String uuid) {
         System.out.println("Entered resume '" + uuid + "' not exist");
