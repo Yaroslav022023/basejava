@@ -2,23 +2,44 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-public class ArrayStorage extends AbstractArrayStorage{
+import java.util.Arrays;
 
-    public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
+public class ArrayStorage extends AbstractArrayStorage {
 
-        if (countResumes == CAPACITY) {
-            System.out.println("The resume storage is full");
-        } else if (index >= 0) {
-            System.out.println("Such resume '" + resume + "' already added.");
-        } else {
-            storage[countResumes] = resume;
-            countResumes++;
-        }
+    @Override
+    protected Resume[] getAllConcreteStorage() {
+        return Arrays.copyOf(storage, countResumes);
     }
 
     @Override
-    public int getIndex(String uuid) {
+    protected void saveConcreteStorage(Resume resume, int index) {
+        storage[countResumes] = resume;
+        countResumes++;
+    }
+
+    @Override
+    protected void deleteFromConcreteStorage(int index) {
+        storage[index] = storage[countResumes];
+        storage[countResumes] = null;
+    }
+
+    @Override
+    protected Resume getFromConcreteStorage(int index) {
+        return storage[index];
+    }
+
+    @Override
+    protected void clearConcreteStorage() {
+        Arrays.fill(storage, 0, countResumes, null);
+    }
+
+    @Override
+    protected void updateConcreteStorage(Resume resume, int index) {
+        storage[index] = resume;
+    }
+
+    @Override
+    protected int getIndex(String uuid) {
         for (int i = 0; i < countResumes; i++) {
             if (uuid.equals(storage[i].getUuid())) {
                 return i;
