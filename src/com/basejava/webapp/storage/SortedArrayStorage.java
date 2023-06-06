@@ -6,46 +6,28 @@ import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
 
-    private final Resume[] sortedStorage = new Resume[CAPACITY];
-
     @Override
-    protected Resume[] getAllConcreteStorage() {
-        return Arrays.copyOf(sortedStorage, countResumes);
+    protected Resume[] doCopyAll() {
+        return Arrays.copyOf(storage, countResumes);
     }
 
     @Override
-    protected void saveConcreteStorage(Resume resume, int index) {
+    protected void insertResume(Resume resume, int index) {
         int stepIndex = Math.abs(index);
-        System.arraycopy(sortedStorage, stepIndex - 1, sortedStorage, stepIndex, (countResumes - (stepIndex - 1)));
-        sortedStorage[stepIndex - 1] = resume;
-        countResumes++;
+        System.arraycopy(storage, stepIndex - 1, storage, stepIndex, (countResumes - (stepIndex - 1)));
+        storage[stepIndex - 1] = resume;
     }
 
     @Override
-    protected void deleteFromConcreteStorage(int index) {
-        System.arraycopy(sortedStorage, index + 1, sortedStorage, index, countResumes);
-        sortedStorage[countResumes] = null;
-    }
-
-    @Override
-    protected Resume getFromConcreteStorage(int index) {
-        return sortedStorage[index];
-    }
-
-    @Override
-    protected void clearConcreteStorage() {
-        Arrays.fill(sortedStorage, 0, countResumes, null);
-    }
-
-    @Override
-    protected void updateConcreteStorage(Resume resume, int index) {
-        sortedStorage[index] = resume;
+    protected void removeResume(int index) {
+        System.arraycopy(storage, index + 1, storage, index, countResumes);
+        storage[countResumes] = null;
     }
 
     @Override
     protected int getIndex(String uuid) {
         Resume searchKey = new Resume();
         searchKey.setUuid(uuid);
-        return Arrays.binarySearch(sortedStorage, 0, countResumes, searchKey);
+        return Arrays.binarySearch(storage, 0, countResumes, searchKey);
     }
 }

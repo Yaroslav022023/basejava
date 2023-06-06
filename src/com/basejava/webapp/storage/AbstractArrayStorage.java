@@ -2,21 +2,20 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
+import java.util.Arrays;
+
 public abstract class AbstractArrayStorage implements Storage{
     protected static final int CAPACITY = 10000;
     protected final Resume[] storage = new Resume[CAPACITY];
     protected int countResumes;
 
-    protected abstract Resume[] getAllConcreteStorage();
-    protected abstract void saveConcreteStorage(Resume resume, int index);
-    protected abstract void deleteFromConcreteStorage(int index);
-    protected abstract Resume getFromConcreteStorage(int index);
-    protected abstract void clearConcreteStorage();
-    protected abstract void updateConcreteStorage(Resume resume, int index);
+    protected abstract Resume[] doCopyAll();
+    protected abstract void insertResume(Resume resume, int index);
+    protected abstract void removeResume(int index);
     protected abstract int getIndex(String uuid);
 
     public final Resume[] getAll() {
-        return getAllConcreteStorage();
+        return doCopyAll();
     }
 
     public final int getSize() {
@@ -31,7 +30,8 @@ public abstract class AbstractArrayStorage implements Storage{
         } else if (index >= 0) {
             System.out.println("Such resume '" + resume + "' already added.");
         } else {
-            saveConcreteStorage(resume, index);
+            insertResume(resume, index);
+            countResumes++;
         }
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractArrayStorage implements Storage{
         int index = getIndex(uuid);
         if (index >= 0) {
             countResumes--;
-            deleteFromConcreteStorage(index);
+            removeResume(index);
             System.out.println("The resume '" + uuid + "' was successfully deleted.");
         } else {
             outputMessageNotExistResume(uuid);
@@ -49,21 +49,21 @@ public abstract class AbstractArrayStorage implements Storage{
     public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index >= 0) {
-            return getFromConcreteStorage(index);
+            return storage[index];
         }
         outputMessageNotExistResume(uuid);
         return null;
     }
 
     public final void clear() {
-        clearConcreteStorage();
+        Arrays.fill(storage, 0, countResumes, null);
         countResumes = 0;
     }
 
     public final void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index >= 0) {
-            updateConcreteStorage(resume, index);
+            storage[index] = resume;
         } else {
             outputMessageNotExistResume(resume.getUuid());
         }
