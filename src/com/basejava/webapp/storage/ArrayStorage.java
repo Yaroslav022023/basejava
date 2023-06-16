@@ -2,14 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-import java.util.Arrays;
-
 public class ArrayStorage extends AbstractArrayStorage {
-
-    @Override
-    protected Resume[] doCopyAll() {
-        return Arrays.copyOf(storage, countResumes);
-    }
 
     @Override
     protected void insertResume(Resume resume, int index) {

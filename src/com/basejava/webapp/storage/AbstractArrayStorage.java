@@ -1,5 +1,6 @@
 package com.basejava.webapp.storage;
 
+import com.basejava.webapp.exceptions.*;
 import com.basejava.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -9,13 +10,12 @@ public abstract class AbstractArrayStorage implements Storage{
     protected final Resume[] storage = new Resume[CAPACITY];
     protected int countResumes;
 
-    protected abstract Resume[] doCopyAll();
     protected abstract void insertResume(Resume resume, int index);
     protected abstract void removeResume(int index);
     protected abstract int getIndex(String uuid);
 
     public final Resume[] getAll() {
-        return doCopyAll();
+        return Arrays.copyOf(storage, countResumes);
     }
 
     public final int getSize() {
@@ -26,9 +26,9 @@ public abstract class AbstractArrayStorage implements Storage{
         int index = getIndex(resume.getUuid());
 
         if (countResumes == CAPACITY) {
-            System.out.println("The resume storage is full");
+            throw new StorageException("Storage overflow", resume.getUuid());
         } else if (index >= 0) {
-            System.out.println("Such resume '" + resume + "' already added.");
+            throw new ExistStorageException(resume.getUuid());
         } else {
             insertResume(resume, index);
             countResumes++;
@@ -42,7 +42,7 @@ public abstract class AbstractArrayStorage implements Storage{
             removeResume(index);
             System.out.println("The resume '" + uuid + "' was successfully deleted.");
         } else {
-            outputMessageNotExistResume(uuid);
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -51,8 +51,7 @@ public abstract class AbstractArrayStorage implements Storage{
         if (index >= 0) {
             return storage[index];
         }
-        outputMessageNotExistResume(uuid);
-        return null;
+        throw new NotExistStorageException(uuid);
     }
 
     public final void clear() {
@@ -65,11 +64,7 @@ public abstract class AbstractArrayStorage implements Storage{
         if (index >= 0) {
             storage[index] = resume;
         } else {
-            outputMessageNotExistResume(resume.getUuid());
+            throw new NotExistStorageException(resume.getUuid());
         }
-    }
-
-    private void outputMessageNotExistResume(String uuid) {
-        System.out.println("Entered resume '" + uuid + "' not exist");
     }
 }

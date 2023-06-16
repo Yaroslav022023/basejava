@@ -1,6 +1,8 @@
 /out
 *.class
 log
+/lib
+/test
 
 #Intellij IDEA
 /.idea
