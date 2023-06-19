@@ -7,10 +7,14 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractArrayStorageTest {
-    private static final Resume r1 = new Resume("UUID_1");
-    private static final Resume r2 = new Resume("UUID_2");
-    private static final Resume r3 = new Resume("UUID_3");
-    private static final Resume r4 = new Resume("UUID_25");
+    private static final String UUID_1 = "UUID_1";
+    private static final String UUID_2 = "UUID_2";
+    private static final String UUID_3 = "UUID_3";
+    private static final String UUID_4 = "UUID_4";
+    private final Resume r1 = new Resume(UUID_1);
+    private final Resume r2 = new Resume(UUID_2);
+    private final Resume r3 = new Resume(UUID_3);
+    private final Resume r4 = new Resume(UUID_4);
     private final Storage storage;
 
     protected AbstractArrayStorageTest(Storage storage) {
@@ -31,10 +35,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     final void getAll() {
-        Resume[] expected = new Resume[3];
-        expected[0] = r1;
-        expected[1] = r2;
-        expected[2] = r3;
+        Resume[] expected = new Resume[]{r1,r2,r3};
 
         Assertions.assertArrayEquals(expected, storage.getAll());
     }
@@ -54,11 +55,11 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     void delete() {
-        storage.delete(r1.getUuid());
+        storage.delete(UUID_1);
 
         assertSize(2);
         assertThrows(NotExistStorageException.class, () -> {
-           storage.get(r1.getUuid());
+           storage.get(UUID_1);
         });
     }
 
@@ -99,17 +100,21 @@ public abstract class AbstractArrayStorageTest {
     @Test
     void getNotExistResume() {
         assertThrows(NotExistStorageException.class, () -> {
-            storage.get(r4.getUuid());
+            storage.get(UUID_4);
         });
     }
 
     @Test
     void saveOverflow() {
         storage.clear();
-        int capacityStorage = 10000;
+        int capacityStorage = AbstractArrayStorage.CAPACITY;
 
-        for (int i = 0; i < capacityStorage; i++) {
-            storage.save(new Resume());
+        try {
+            for (int i = 0; i < capacityStorage; i++) {
+                storage.save(new Resume());
+            }
+        } catch (StorageException e) {
+            fail("Overflow occurred ahead time.");
         }
 
         assertThrows(StorageException.class, () -> {
