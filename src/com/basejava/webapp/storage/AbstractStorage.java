@@ -11,12 +11,12 @@ public abstract class AbstractStorage implements Storage {
         return countResumes;
     }
 
+    protected abstract Resume[] getAllFromIndividualStorage();
     protected abstract boolean saveIndividualStorage(Resume resume);
     protected abstract boolean deleteFromIndividualStorage(String uuid);
     protected abstract Resume getFromIndividualStorage(String uuid);
     protected abstract void clearFromIndividualStorage();
     protected abstract boolean updateFromIndividualStorage(Resume resume);
-    protected abstract Resume[] getAllFromIndividualStorage();
 
     public final Resume[] getAll() {
         return getAllFromIndividualStorage();

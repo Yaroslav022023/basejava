@@ -9,9 +9,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage{
     protected static final int CAPACITY = 10000;
     protected final Resume[] storage = new Resume[CAPACITY];
 
+    protected abstract int getIndex(String uuid);
     protected abstract void insertResume(Resume resume, int index);
     protected abstract void removeResume(int index);
-    protected abstract int getIndex(String uuid);
 
     public final Resume[] getAllFromIndividualStorage() {
         return Arrays.copyOf(storage, countResumes);
