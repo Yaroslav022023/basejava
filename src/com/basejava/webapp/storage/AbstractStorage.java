@@ -11,53 +11,59 @@ public abstract class AbstractStorage implements Storage {
         return countResumes;
     }
 
-    protected abstract Resume[] getAllFromIndividualStorage();
-    protected abstract boolean saveIndividualStorage(Resume resume);
-    protected abstract boolean deleteFromIndividualStorage(String uuid);
-    protected abstract Resume getFromIndividualStorage(String uuid);
-    protected abstract void clearFromIndividualStorage();
-    protected abstract boolean updateFromIndividualStorage(Resume resume);
-
-    public final Resume[] getAll() {
-        return getAllFromIndividualStorage();
-    }
+    protected abstract void doSave(Resume resume, Object index);
+    protected abstract void doDelete(Object searchedKey);
+    protected abstract Resume doGet(Object searchedKey);
+    protected abstract void doClear();
+    protected abstract void doUpdate(Resume resume, Object searchedKey);
+    protected abstract Object getSearchKey(String uuid);
+    protected abstract boolean isExisting (Object searchKey);
 
     public final void save(Resume resume) {
-        if (!saveIndividualStorage(resume)) {
-            throw new ExistStorageException(resume.getUuid());
-        }
+        Object searchedKey = findNotExistingSearchKey(resume.getUuid());
+        doSave(resume, searchedKey);
+        countResumes++;
         System.out.println("The resume '" + resume.getUuid() + "' was successfully added.");
     }
 
     public final void delete(String uuid) {
-        if (!deleteFromIndividualStorage(uuid)) {
-            throw new NotExistStorageException(uuid);
-        }
+        Object searchedKey = findExistingSearchKey(uuid);
+        doDelete(searchedKey);
         countResumes--;
         System.out.println("The resume '" + uuid + "' was successfully deleted.");
     }
 
     public final Resume get(String uuid) {
-        Resume currentResume = getFromIndividualStorage(uuid);
-
-        if (currentResume == null) {
-            throw new NotExistStorageException(uuid);
-        }
-        return currentResume;
+        return doGet(findExistingSearchKey(uuid));
     }
 
 
     public final void clear() {
-        clearFromIndividualStorage();
+        doClear();
         countResumes = 0;
         System.out.println("The storage has been cleared");
     }
 
 
     public final void update(Resume resume) {
-        if (!updateFromIndividualStorage(resume)) {
-            throw new NotExistStorageException(resume.getUuid());
-        }
+        Object searchedKey = findExistingSearchKey(resume.getUuid());
+        doUpdate(resume, searchedKey);
         System.out.println("The resume '" + resume.getUuid() + "' was successfully updated.");
+    }
+
+    private Object findNotExistingSearchKey(String uuid) {
+        Object searchedKey = getSearchKey(uuid);
+        if (!isExisting(searchedKey)) {
+            return searchedKey;
+        }
+        throw new ExistStorageException(uuid);
+    }
+
+    private Object findExistingSearchKey(String uuid) {
+        Object searchedKey = getSearchKey(uuid);
+        if (isExisting(searchedKey)) {
+            return searchedKey;
+        }
+        throw new NotExistStorageException(uuid);
     }
 }

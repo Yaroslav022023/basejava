@@ -9,42 +9,36 @@ import java.util.List;
 public class ListStorage extends AbstractStorage{
     List<Resume> arrayList = new ArrayList<>();
 
-    public Resume[] getAllFromIndividualStorage() {
+    public final Resume[] getAll() {
         return arrayList.toArray(new Resume[countResumes]);
     }
 
-    protected boolean saveIndividualStorage(Resume resume) {
-        if (arrayList.contains(resume)) {
-            return false;
-        }
+    protected final void doSave(Resume resume, Object index) {
         arrayList.add(resume);
-        countResumes++;
-        return true;
     }
 
-    public final boolean deleteFromIndividualStorage(String uuid) {
-        if (iterator(uuid) != null) {
-            arrayList.remove(iterator(uuid));
-            return true;
-        }
-        return false;
+    protected final void doDelete(Object searchedKey) {
+        arrayList.remove((int) searchedKey);
     }
 
-    public Resume getFromIndividualStorage(String uuid) {
-        return iterator(uuid);
+    protected final Resume doGet(Object searchedKey) {
+        return arrayList.get(arrayList.indexOf((Resume) searchedKey));
     }
 
-    public void clearFromIndividualStorage() {
+    protected final void doClear() {
         arrayList.clear();
     }
 
-    public boolean updateFromIndividualStorage(Resume resume) {
-        int index = arrayList.indexOf(resume);
-        if (index >= 0) {
-            arrayList.set(index, resume);
-            return true;
-        }
-        return false;
+    protected final void doUpdate(Resume resume, Object searchedKey) {
+        arrayList.set(arrayList.indexOf((Resume) searchedKey), resume);
+    }
+
+    protected final Object getSearchKey(String uuid) {
+        return iterator(uuid);
+    }
+
+    protected final boolean isExisting(Object searchKey) {
+        return searchKey != null;
     }
 
     private Resume iterator(String uuid) {

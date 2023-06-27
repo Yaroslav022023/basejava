@@ -9,54 +9,38 @@ public abstract class AbstractArrayStorage extends AbstractStorage{
     protected static final int CAPACITY = 10000;
     protected final Resume[] storage = new Resume[CAPACITY];
 
-    protected abstract int getIndex(String uuid);
+    protected abstract Object getSearchKey(String uuid);
     protected abstract void insertResume(Resume resume, int index);
     protected abstract void removeResume(int index);
 
-    public final Resume[] getAllFromIndividualStorage() {
+    public final Resume[] getAll() {
         return Arrays.copyOf(storage, countResumes);
     }
 
-    protected boolean saveIndividualStorage(Resume resume) {
-        int index = getIndex(resume.getUuid());
-
-        if (index >= 0) {
-            return false;
-        } else if (countResumes == CAPACITY) {
+    protected final void doSave(Resume resume, Object index) {
+        if (countResumes == CAPACITY) {
             throw new StorageException("Storage overflow", resume.getUuid());
         }
-        insertResume(resume, index);
-        countResumes++;
-        return true;
+        insertResume(resume, (int) index);
     }
 
-    public final boolean deleteFromIndividualStorage(String uuid) {
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            removeResume(index);
-            return true;
-        }
-        return false;
+    protected final void doDelete(Object searchedKey) {
+        removeResume((int) searchedKey);
     }
 
-    public final Resume getFromIndividualStorage(String uuid) {
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            return storage[index];
-        }
-        return null;
+    protected final Resume doGet(Object searchedKey) {
+        return storage[(int) searchedKey];
     }
 
-    public final void clearFromIndividualStorage() {
+    protected final void doClear() {
         Arrays.fill(storage, 0, countResumes, null);
     }
 
-    public final boolean updateFromIndividualStorage(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index >= 0) {
-            storage[index] = resume;
-            return true;
-        }
-        return false;
+    protected final void doUpdate(Resume resume, Object searchedKey) {
+        storage[(int) searchedKey] = resume;
+    }
+
+    protected final boolean isExisting(Object searchKey) {
+        return (int) searchKey >= 0;
     }
 }
