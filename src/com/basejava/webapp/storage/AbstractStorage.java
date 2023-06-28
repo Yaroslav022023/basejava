@@ -7,6 +7,7 @@ import com.basejava.webapp.model.Resume;
 public abstract class AbstractStorage implements Storage {
     protected int countResumes;
 
+    @Override
     public final int getSize() {
         return countResumes;
     }
@@ -19,6 +20,7 @@ public abstract class AbstractStorage implements Storage {
     protected abstract Object getSearchKey(String uuid);
     protected abstract boolean isExisting (Object searchKey);
 
+    @Override
     public final void save(Resume resume) {
         Object searchedKey = findNotExistingSearchKey(resume.getUuid());
         doSave(resume, searchedKey);
@@ -26,6 +28,7 @@ public abstract class AbstractStorage implements Storage {
         System.out.println("The resume '" + resume.getUuid() + "' was successfully added.");
     }
 
+    @Override
     public final void delete(String uuid) {
         Object searchedKey = findExistingSearchKey(uuid);
         doDelete(searchedKey);
@@ -33,18 +36,19 @@ public abstract class AbstractStorage implements Storage {
         System.out.println("The resume '" + uuid + "' was successfully deleted.");
     }
 
+    @Override
     public final Resume get(String uuid) {
         return doGet(findExistingSearchKey(uuid));
     }
 
-
+    @Override
     public final void clear() {
         doClear();
         countResumes = 0;
         System.out.println("The storage has been cleared");
     }
 
-
+    @Override
     public final void update(Resume resume) {
         Object searchedKey = findExistingSearchKey(resume.getUuid());
         doUpdate(resume, searchedKey);
