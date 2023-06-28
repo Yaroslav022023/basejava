@@ -3,8 +3,8 @@ package com.basejava.webapp.storage;
 import com.basejava.webapp.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class ListStorage extends AbstractStorage{
     List<Resume> arrayList = new ArrayList<>();
@@ -18,7 +18,7 @@ public class ListStorage extends AbstractStorage{
     }
 
     protected final void doDelete(Object searchedKey) {
-        arrayList.remove((int) searchedKey);
+        arrayList.remove((Resume) searchedKey);
     }
 
     protected final Resume doGet(Object searchedKey) {
@@ -42,11 +42,11 @@ public class ListStorage extends AbstractStorage{
     }
 
     private Resume iterator(String uuid) {
-        Iterator<Resume> iterator = arrayList.listIterator();
+        ListIterator<Resume> iterator = arrayList.listIterator();
 
         while (iterator.hasNext()) {
             if (iterator.next().getUuid().equals(uuid)) {
-                return iterator.next();
+                return iterator.previous();
             }
         }
         return null;
