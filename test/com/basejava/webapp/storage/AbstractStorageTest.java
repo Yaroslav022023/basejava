@@ -34,7 +34,7 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    final void getAll() {
+    void getAll() {
         Resume[] expected = new Resume[]{r1,r2,r3};
 
         Assertions.assertArrayEquals(expected, storage.getAll());

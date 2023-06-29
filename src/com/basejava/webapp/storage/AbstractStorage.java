@@ -5,26 +5,11 @@ import com.basejava.webapp.exceptions.NotExistStorageException;
 import com.basejava.webapp.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
-    protected int countResumes;
-
-    @Override
-    public final int getSize() {
-        return countResumes;
-    }
-
-    protected abstract void doSave(Resume resume, Object index);
-    protected abstract void doDelete(Object searchedKey);
-    protected abstract Resume doGet(Object searchedKey);
-    protected abstract void doClear();
-    protected abstract void doUpdate(Resume resume, Object searchedKey);
-    protected abstract Object getSearchKey(String uuid);
-    protected abstract boolean isExisting (Object searchKey);
 
     @Override
     public final void save(Resume resume) {
         Object searchedKey = findNotExistingSearchKey(resume.getUuid());
         doSave(resume, searchedKey);
-        countResumes++;
         System.out.println("The resume '" + resume.getUuid() + "' was successfully added.");
     }
 
@@ -32,7 +17,6 @@ public abstract class AbstractStorage implements Storage {
     public final void delete(String uuid) {
         Object searchedKey = findExistingSearchKey(uuid);
         doDelete(searchedKey);
-        countResumes--;
         System.out.println("The resume '" + uuid + "' was successfully deleted.");
     }
 
@@ -44,14 +28,13 @@ public abstract class AbstractStorage implements Storage {
     @Override
     public final void clear() {
         doClear();
-        countResumes = 0;
         System.out.println("The storage has been cleared");
     }
 
     @Override
     public final void update(Resume resume) {
         Object searchedKey = findExistingSearchKey(resume.getUuid());
-        doUpdate(resume, searchedKey);
+        doUpdate(searchedKey, resume);
         System.out.println("The resume '" + resume.getUuid() + "' was successfully updated.");
     }
 
@@ -70,4 +53,12 @@ public abstract class AbstractStorage implements Storage {
         }
         throw new NotExistStorageException(uuid);
     }
+
+    protected abstract void doSave(Resume resume, Object index);
+    protected abstract void doDelete(Object searchedKey);
+    protected abstract Resume doGet(Object searchedKey);
+    protected abstract void doClear();
+    protected abstract void doUpdate(Object searchedKey, Resume resume);
+    protected abstract Object getSearchKey(String uuid);
+    protected abstract boolean isExisting (Object searchKey);
 }
