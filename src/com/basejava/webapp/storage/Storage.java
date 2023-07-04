@@ -2,9 +2,11 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
+import java.util.List;
+
 public interface Storage {
 
-    Resume[] getAll();
+    List<Resume> getAllSorted();
     int getSize();
     void save(Resume resume);
     void delete(String uuid);

@@ -4,6 +4,9 @@ import com.basejava.webapp.exceptions.*;
 import com.basejava.webapp.model.Resume;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractStorageTest {
@@ -12,10 +15,14 @@ public abstract class AbstractStorageTest {
     private static final String UUID_2 = "UUID_2";
     private static final String UUID_3 = "UUID_3";
     private static final String UUID_4 = "UUID_4";
-    protected final Resume r1 = new Resume(UUID_1);
-    protected final Resume r2 = new Resume(UUID_2);
-    protected final Resume r3 = new Resume(UUID_3);
-    protected final Resume r4 = new Resume(UUID_4);
+    private static final String FULL_NAME_1 = "Bob";
+    private static final String FULL_NAME_2 = "Piter";
+    private static final String FULL_NAME_3 = "Jason";
+    private static final String FULL_NAME_4 = "Carl";
+    protected final Resume r1 = new Resume(UUID_1, FULL_NAME_1);
+    protected final Resume r2 = new Resume(UUID_2, FULL_NAME_2);
+    protected final Resume r3 = new Resume(UUID_3, FULL_NAME_3);
+    protected final Resume r4 = new Resume(UUID_4, FULL_NAME_4);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -34,10 +41,14 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    void getAll() {
-        Resume[] expected = new Resume[]{r1,r2,r3};
+    void getAllSorted() {
+        ArrayList<Resume> expected = new ArrayList<>();
+        expected.add(r1);
+        expected.add(r2);
+        expected.add(r3);
+        expected.sort(combinedComparator());
 
-        Assertions.assertArrayEquals(expected, storage.getAll());
+        assertIterableEquals(expected, storage.getAllSorted());
     }
 
     @Test
@@ -58,9 +69,7 @@ public abstract class AbstractStorageTest {
         storage.delete(UUID_1);
 
         assertSize(2);
-        assertThrows(NotExistStorageException.class, () -> {
-           storage.get(UUID_1);
-        });
+        assertThrows(NotExistStorageException.class, () -> storage.get(UUID_1));
     }
 
     @Test
@@ -74,9 +83,8 @@ public abstract class AbstractStorageTest {
     void clear() {
         storage.clear();
 
-        Resume[] emptyStorage = new Resume[0];
 
-        assertArrayEquals(emptyStorage, storage.getAll());
+        assertEquals(0, storage.getSize());
         assertSize(0);
     }
 
@@ -85,23 +93,17 @@ public abstract class AbstractStorageTest {
         assertSame(r1, storage.get(r1.getUuid()));
         storage.update(r1);
 
-        assertThrows(NotExistStorageException.class, () -> {
-           storage.update(r4);
-        });
+        assertThrows(NotExistStorageException.class, () -> storage.update(r4));
     }
 
     @Test
     void saveExistResume() {
-        assertThrows(ExistStorageException.class, () -> {
-            storage.save(r1);
-        });
+        assertThrows(ExistStorageException.class, () -> storage.save(r1));
     }
 
     @Test
     void getNotExistResume() {
-        assertThrows(NotExistStorageException.class, () -> {
-            storage.get(UUID_4);
-        });
+        assertThrows(NotExistStorageException.class, () -> storage.get(UUID_4));
     }
 
     private void assertSize(int size) {
@@ -110,5 +112,12 @@ public abstract class AbstractStorageTest {
 
     private void assertGet(Resume resume) {
         assertEquals(resume, storage.get(resume.getUuid()));
+    }
+
+    private Comparator<Resume> combinedComparator() {
+        Comparator<Resume> fullNameComparator = Comparator.comparing(Resume::getFullName);
+        Comparator<Resume> uuidComparator = Comparator.comparing(Resume::getUuid);
+
+        return fullNameComparator.thenComparing(uuidComparator);
     }
 }

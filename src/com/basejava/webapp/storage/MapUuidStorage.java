@@ -3,14 +3,16 @@ package com.basejava.webapp.storage;
 import com.basejava.webapp.model.Resume;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ListStorage extends AbstractStorage{
-    private final List<Resume> storage = new ArrayList<>();
+public class MapUuidStorage extends AbstractStorage {
+    private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
     protected final List<Resume> doGetAllSorted() {
-        return storage;
+        return new ArrayList<>(this.storage.values());
     }
 
     @Override
@@ -20,17 +22,17 @@ public class ListStorage extends AbstractStorage{
 
     @Override
     protected final void doSave(Resume resume, Object index) {
-        storage.add(resume);
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
     protected final void doDelete(Object searchedKey) {
-        storage.remove((int) searchedKey);
+        storage.remove((String) searchedKey);
     }
 
     @Override
     protected final Resume doGet(Object searchedKey) {
-        return storage.get((int) searchedKey);
+        return storage.get((String) searchedKey);
     }
 
     @Override
@@ -40,21 +42,16 @@ public class ListStorage extends AbstractStorage{
 
     @Override
     protected final void doUpdate(Object searchedKey, Resume resume) {
-        storage.set((int) searchedKey, resume);
+        storage.replace((String) searchedKey, resume);
     }
 
     @Override
     protected final Object getSearchKey(String uuid) {
-        for (int i = 0; i < storage.size(); i++) {
-            if (storage.get(i).getUuid().equals(uuid)) {
-                return i;
-            }
-        }
-        return null;
+        return uuid;
     }
 
     @Override
     protected final boolean isExisting(Object searchKey) {
-        return searchKey != null;
+        return storage.containsKey((String) searchKey);
     }
 }
