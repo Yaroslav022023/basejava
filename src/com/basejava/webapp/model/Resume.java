@@ -29,12 +29,12 @@ public class Resume {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
-        return Objects.equals(getUuid(), resume.getUuid());
+        return getUuid().equals(resume.getUuid()) && getFullName().equals(resume.getFullName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUuid());
+        return Objects.hash(getUuid(), getFullName());
     }
 
     @Override

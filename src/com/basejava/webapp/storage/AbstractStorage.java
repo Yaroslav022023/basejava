@@ -72,12 +72,12 @@ public abstract class AbstractStorage implements Storage {
         return fullNameComparator.thenComparing(uuidComparator);
     }
 
+    protected abstract Object getSearchKey(String uuid);
     protected abstract List<Resume> doGetAllSorted();
     protected abstract void doSave(Resume resume, Object index);
     protected abstract void doDelete(Object searchedKey);
     protected abstract Resume doGet(Object searchedKey);
     protected abstract void doClear();
     protected abstract void doUpdate(Object searchedKey, Resume resume);
-    protected abstract Object getSearchKey(String uuid);
     protected abstract boolean isExisting (Object searchKey);
 }
