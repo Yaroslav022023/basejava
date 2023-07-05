@@ -3,6 +3,7 @@ package com.basejava.webapp.storage;
 import com.basejava.webapp.exceptions.StorageException;
 import com.basejava.webapp.model.Resume;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +14,13 @@ public abstract class AbstractArrayStorage extends AbstractStorage{
 
     @Override
     protected final List<Resume> doGetAllSorted() {
-        return Arrays.asList(storage);
+        ArrayList<Resume> storageForTransfer = new ArrayList<>();
+        for (Resume resume : storage) {
+            if (resume != null) {
+                storageForTransfer.add(resume);
+            }
+        }
+        return storageForTransfer;
     }
 
     @Override
