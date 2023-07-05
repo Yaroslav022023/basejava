@@ -48,7 +48,7 @@ public class MapResumeStorage extends AbstractStorage {
     @Override
     protected final Object getSearchKey(String fullName) {
         for (Map.Entry<String, Resume> entry : storage.entrySet()) {
-            if (entry.getValue().getFullName().equals(fullName)) {
+            if (entry.getValue().getUuid().equals(fullName)) {
                 return entry.getKey();
             }
         }

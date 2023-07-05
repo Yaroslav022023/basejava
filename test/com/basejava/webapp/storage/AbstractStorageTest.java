@@ -15,10 +15,10 @@ public abstract class AbstractStorageTest {
     private static final String UUID_2 = "UUID_2";
     private static final String UUID_3 = "UUID_3";
     private static final String UUID_4 = "UUID_4";
-    private static final String FULL_NAME_1 = "Bob";
-    private static final String FULL_NAME_2 = "Piter";
-    private static final String FULL_NAME_3 = "Jason";
-    private static final String FULL_NAME_4 = "Carl";
+    protected static final String FULL_NAME_1 = "Bob";
+    protected static final String FULL_NAME_2 = "Bob";
+    protected static final String FULL_NAME_3 = "Bob";
+    protected static final String FULL_NAME_4 = "Bob";
     protected final Resume r1 = new Resume(UUID_1, FULL_NAME_1);
     protected final Resume r2 = new Resume(UUID_2, FULL_NAME_2);
     protected final Resume r3 = new Resume(UUID_3, FULL_NAME_3);
@@ -106,11 +106,11 @@ public abstract class AbstractStorageTest {
         assertThrows(NotExistStorageException.class, () -> storage.get(UUID_4));
     }
 
-    private void assertSize(int size) {
+    protected void assertSize(int size) {
         assertEquals(size, storage.getSize());
     }
 
-    private void assertGet(Resume resume) {
+    protected void assertGet(Resume resume) {
         assertEquals(resume, storage.get(resume.getUuid()));
     }
 
