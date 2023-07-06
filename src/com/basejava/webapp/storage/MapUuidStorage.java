@@ -11,6 +11,11 @@ public class MapUuidStorage extends AbstractStorage {
     protected final Map<String, Resume> storage = new HashMap<>();
 
     @Override
+    protected Object getSearchKey(String uuid) {
+        return uuid;
+    }
+
+    @Override
     protected final List<Resume> doGetAllSorted() {
         return new ArrayList<>(this.storage.values());
     }
@@ -26,12 +31,12 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected final void doDelete(Object searchedKey) {
+    protected void doDelete(Object searchedKey) {
         storage.remove((String) searchedKey);
     }
 
     @Override
-    protected final Resume doGet(Object searchedKey) {
+    protected Resume doGet(Object searchedKey) {
         return storage.get((String) searchedKey);
     }
 
@@ -41,17 +46,12 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected final void doUpdate(Object searchedKey, Resume resume) {
+    protected void doUpdate(Object searchedKey, Resume resume) {
         storage.replace((String) searchedKey, resume);
     }
 
     @Override
-    protected Object getSearchKey(String uuid) {
-        return uuid;
-    }
-
-    @Override
-    protected final boolean isExisting(Object searchKey) {
+    protected boolean isExisting(Object searchKey) {
         return storage.containsKey((String) searchKey);
     }
 }

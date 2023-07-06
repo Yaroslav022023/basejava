@@ -8,12 +8,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Comparator.comparing;
+
 public abstract class AbstractStorage implements Storage {
+    protected static final Comparator<Resume> COMPARATOR =
+            comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     @Override
     public final List<Resume> getAllSorted() {
         List<Resume> storageSorted = new ArrayList<>(doGetAllSorted());
-        storageSorted.sort(combinedComparator());
+        storageSorted.sort(COMPARATOR);
         return storageSorted;
     }
 
@@ -63,13 +67,6 @@ public abstract class AbstractStorage implements Storage {
             return searchedKey;
         }
         throw new NotExistStorageException(uuid);
-    }
-
-    protected Comparator<Resume> combinedComparator() {
-        Comparator<Resume> fullNameComparator = Comparator.comparing(Resume::getFullName);
-        Comparator<Resume> uuidComparator = Comparator.comparing(Resume::getUuid);
-
-        return fullNameComparator.thenComparing(uuidComparator);
     }
 
     protected abstract Object getSearchKey(String uuid);

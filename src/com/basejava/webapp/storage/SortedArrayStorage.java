@@ -3,13 +3,14 @@ package com.basejava.webapp.storage;
 import com.basejava.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
     protected final Object getSearchKey(String uuid) {
-        Resume searchKey = new Resume(uuid, "FULL_NAME_1");
-        return Arrays.binarySearch(storage, 0, countResumes, searchKey, combinedComparator());
+        Resume searchKey = new Resume(uuid, "");
+        return Arrays.binarySearch(storage, 0, countResumes, searchKey, comparatorUuid);
     }
 
     @Override
@@ -24,4 +25,6 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         System.arraycopy(storage, index + 1, storage, index, countResumes);
         storage[countResumes] = null;
     }
+
+    private final Comparator<Resume> comparatorUuid = Comparator.comparing(Resume::getUuid);
 }
