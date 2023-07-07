@@ -2,47 +2,53 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
-public class MapResumeStorage extends MapUuidStorage{
+public class MapResumeStorage extends AbstractStorage{
+    private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
     protected final Object getSearchKey(String uuid) {
-        for (Map.Entry<String, Resume> entry : storage.entrySet()) {
-            if (entry.getKey().equals(uuid)) {
-                return entry;
-            }
-        }
-        return null;
+        return storage.get(uuid);
     }
 
     @Override
-    protected final void doDelete(Object searchedKey) {
-        storage.entrySet().removeIf(searchedKey::equals);
+    protected final List<Resume> doGetAllSorted() {
+        return new ArrayList<>(this.storage.values());
     }
 
     @Override
-    protected final Resume doGet(Object searchedKey) {
-        return Objects.requireNonNull(iterator(searchedKey)).getValue();
+    public final int getSize() {
+        return storage.size();
     }
 
     @Override
-    protected void doUpdate(Object searchedKey, Resume resume) {
-        Objects.requireNonNull(iterator(searchedKey)).setValue(resume);
+    protected final void doSave(Resume resume, Object index) {
+        storage.put(resume.getUuid(), resume);
+    }
+
+    @Override
+    protected final void doDelete(Object searchKey) {
+        storage.remove(((Resume) searchKey).getUuid());
+    }
+
+    @Override
+    protected final Resume doGet(Object searchKey) {
+        return storage.get(((Resume) searchKey).getUuid());
+    }
+
+    @Override
+    protected final void doClear() {
+        storage.clear();
+    }
+
+    @Override
+    protected final void doUpdate(Object searchKey, Resume resume) {
+        storage.replace(((Resume) searchKey).getUuid(), resume);
     }
 
     @Override
     protected final boolean isExisting(Object searchKey) {
         return searchKey != null;
-    }
-
-    private Map.Entry<String, Resume> iterator(Object searchedKey) {
-        for (Map.Entry<String, Resume> entry : storage.entrySet()) {
-            if (searchedKey.equals(entry)) {
-                return entry;
-            }
-        }
-        return null;
     }
 }
