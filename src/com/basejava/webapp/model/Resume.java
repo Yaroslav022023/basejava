@@ -70,7 +70,7 @@ public class Resume {
         contacts.clear();
     }
 
-    public final void clearSectons() {
+    public final void clearSections() {
         sections.clear();
     }
 
