@@ -15,7 +15,7 @@ public enum ContactType {
         this.contact = contact;
     }
 
-    public String getContact() {
+    public final String getContact() {
         return contact;
     }
 }

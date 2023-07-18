@@ -24,30 +24,39 @@ public class ResumeTestData {
         System.out.println(resume.getContact(ContactType.GITHUB));
         System.out.println(resume.getContact(ContactType.STACKOVERFLOW));
         System.out.println(resume.getContact(ContactType.URL_HOMEPAGE));
-        System.out.println("---------------------------");
+        //System.out.println("---------------------------");
+        System.out.println();
 
         //OBJECTIVE enumSection
         Section objective = new TextSection("text text text text text");
         resume.addSections(Sections.OBJECTIVE, objective);
-        System.out.println("Objective (class section: TextSection): \n"
+        System.out.println("--Objective (class section: TextSection): \n"
                 + resume.getSection(Sections.OBJECTIVE) + "\n");
 
         //PERSONAL enumSection
         Section personal = new TextSection("text text text text text");
         resume.addSections(Sections.PERSONAL, personal);
-        System.out.println("Personal (class section: TextSection): \n"
+        System.out.println("--Personal (class section: TextSection): \n"
                 + resume.getSection(Sections.PERSONAL) + "\n");
 
         //ACHIEVEMENT enumSection
-        Section achievement = new ListSection("text 1", "text 2", "text 3");
+        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
         resume.addSections(Sections.ACHIEVEMENT, achievement);
-        System.out.println("Achievement (class section: ListSection): \n"
-                + resume.getSection(Sections.ACHIEVEMENT) + "\n");
+        System.out.println("--Achievement (class section: ListSection): \n"
+                + resume.getSection(Sections.ACHIEVEMENT));
+        //adding additional 'text 4' into exist ListSection (variable 'achievement')
+        achievement.addText("text 4");
+        System.out.println("--adding additional 'text 4' into exist ListSection (variable 'achievement')"
+                + "\n" + resume.getSection(Sections.ACHIEVEMENT));
+        //delete 'text 1' from exist ListSection (variable 'achievement')
+        achievement.removeText("text 1");
+        System.out.println("--delete 'text 1' from exist ListSection (variable 'achievement')"
+                + "\n" + resume.getSection(Sections.ACHIEVEMENT) + "\n");
 
         //QUALIFICATION enumSection
         Section qualification = new ListSection("text 1", "text 2", "text 3");
         resume.addSections(Sections.QUALIFICATION, qualification);
-        System.out.println("Qualification (class section: ListSection): \n"
+        System.out.println("--Qualification (class section: ListSection): \n"
                 + resume.getSection(Sections.QUALIFICATION) + "\n");
 
         //EXPERIENCE enumSection
@@ -59,13 +68,13 @@ public class ResumeTestData {
         String description = "Some text of description";
         CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
         resume.addSections(Sections.EXPERIENCE, experience);
-        System.out.println("Experience (class section: CompanySection): \n"
+        System.out.println("--Experience (class section: CompanySection): \n"
                 + resume.getSection(Sections.EXPERIENCE) + "\n");
 
         //EDUCATION enumSection
         CompanySection education = new CompanySection(nameCompany, webSite, title, startDate, endDate);
         resume.addSections(Sections.EDUCATION, education);
-        System.out.println("Education (class section: CompanySection): \n"
+        System.out.println("--Education (class section: CompanySection): \n"
                 + resume.getSection(Sections.EDUCATION));
 
         //adding additional Period into exist Company (variable 'education')
@@ -73,7 +82,7 @@ public class ResumeTestData {
         String startDate2 = "05.03.2023";
         String endDate2 = "06.03.2023";
         education.getCompany(nameCompany).addPeriod(title2, startDate2, endDate2);
-        System.out.println("adding additional Period into exist Company (variable 'education'):"
+        System.out.println("--adding additional Period into exist Company (variable 'education'):"
                 + "\n" + resume.getSection(Sections.EDUCATION));
 
         System.out.println("---------------------------");

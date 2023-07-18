@@ -26,41 +26,41 @@ public class Company {
         periods.add(period);
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name = name;
     }
 
-    public String getWebSite() {
+    public final String getWebSite() {
         return webSite;
     }
 
-    public void setWebSite(String webSite) {
+    public final void setWebSite(String webSite) {
         this.webSite = webSite;
     }
 
-    public List<Period> getPeriods() {
+    public final List<Period> getPeriods() {
         return periods;
     }
 
-    public void addPeriod(String tittle, String startDate, String endDate, String description) {
+    public final void addPeriod(String tittle, String startDate, String endDate, String description) {
         Period period = new Period(tittle, startDate, endDate, description);
         periods.add(period);
     }
 
-    public void addPeriod(String tittle, String startDate, String endDate) {
+    public final void addPeriod(String tittle, String startDate, String endDate) {
         Period period = new Period(tittle, startDate, endDate);
         periods.add(period);
     }
 
-    public void removePeriod(Period period) {
+    public final void removePeriod(Period period) {
         periods.remove(period);
     }
 
-    public void clear() {
+    public final void clear() {
         periods.clear();
     }
 
@@ -83,35 +83,35 @@ public class Company {
             this.endDate = dateEnd;
         }
 
-        public String getTittle() {
+        public final String getTittle() {
             return tittle;
         }
 
-        public void setTittle(String tittle) {
+        public final void setTittle(String tittle) {
             this.tittle = tittle;
         }
 
-        public String getStartDate() {
+        public final String getStartDate() {
             return startDate;
         }
 
-        public void setStartDate(String startDate) {
+        public final void setStartDate(String startDate) {
             this.startDate = startDate;
         }
 
-        public String getEndDate() {
+        public final String getEndDate() {
             return endDate;
         }
 
-        public void setEndDate(String endDate) {
+        public final void setEndDate(String endDate) {
             this.endDate = endDate;
         }
 
-        public String getDescription() {
+        public final String getDescription() {
             return description;
         }
 
-        public void setDescription(String description) {
+        public final void setDescription(String description) {
             this.description = description;
         }
 

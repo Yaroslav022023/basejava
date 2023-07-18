@@ -19,11 +19,11 @@ public class CompanySection extends Section{
         companies.add(company);
     }
 
-    public List<Company> getCompanies() {
+    public final List<Company> getCompanies() {
         return companies;
     }
 
-    public Company getCompany(String nameCompany) {
+    public final Company getCompany(String nameCompany) {
         for (Company company : companies) {
             if (nameCompany.equals(company.getName())) {
                 return company;
@@ -32,15 +32,15 @@ public class CompanySection extends Section{
         return null;
     }
 
-    public void addCompany(Company company) {
+    public final void addCompany(Company company) {
         companies.add(company);
     }
 
-    public void removeCompany(String nameCompany) {
+    public final void removeCompany(String nameCompany) {
         companies.removeIf(company -> nameCompany.equals(company.getName()));
     }
 
-    public void clear() {
+    public final void clear() {
         companies.clear();
     }
 

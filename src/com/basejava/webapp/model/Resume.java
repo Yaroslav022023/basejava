@@ -26,51 +26,51 @@ public class Resume {
         this.fullName = fullName;
     }
 
-    public String getUuid() {
+    public final String getUuid() {
         return uuid;
     }
 
-    public String getFullName() {
+    public final String getFullName() {
         return fullName;
     }
 
-    public Map<ContactType, String> getAllContacts() {
+    public final Map<ContactType, String> getAllContacts() {
         return contacts;
     }
 
-    public Map<Sections, Section> getAllSections() {
+    public final Map<Sections, Section> getAllSections() {
         return sections;
     }
 
-    public String getContact(ContactType contactType) {
+    public final String getContact(ContactType contactType) {
         return contacts.get(contactType);
     }
 
-    public Section getSection(Sections enumSection) {
+    public final Section getSection(Sections enumSection) {
         return sections.get(enumSection);
     }
 
-    public void changeContacts(ContactType contactType, String data) {
+    public final void changeContacts(ContactType contactType, String data) {
         contacts.replace(contactType, data);
     }
 
-    public void removeContacts(ContactType contactType) {
+    public final void removeContacts(ContactType contactType) {
         contacts.remove(contactType);
     }
 
-    public void addContacts(ContactType enumContactType, String data) {
+    public final void addContacts(ContactType enumContactType, String data) {
         contacts.put(enumContactType, data);
     }
 
-    public void addSections(Sections enumSections, Section section) {
+    public final void addSections(Sections enumSections, Section section) {
         sections.put(enumSections, section);
     }
 
-    public void clearContacts() {
+    public final void clearContacts() {
         contacts.clear();
     }
 
-    public void clearSectons() {
+    public final void clearSectons() {
         sections.clear();
     }
 

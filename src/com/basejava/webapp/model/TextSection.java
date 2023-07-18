@@ -9,11 +9,11 @@ public class TextSection extends Section{
         this.text = text;
     }
 
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
-    public void setText(String text) {
+    public final void setText(String text) {
         this.text = text;
     }
 

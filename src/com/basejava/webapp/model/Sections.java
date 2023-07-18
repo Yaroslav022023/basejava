@@ -14,7 +14,7 @@ public enum Sections {
         this.section = section;
     }
 
-    public String getSection() {
+    public final String getSection() {
         return section;
     }
 }

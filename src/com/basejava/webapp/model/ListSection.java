@@ -6,25 +6,25 @@ import java.util.List;
 import java.util.Objects;
 
 public class ListSection extends Section{
-    private List<String> texts = new ArrayList<>();
+    private final List<String> texts;
 
     public ListSection(String... texts) {
-        this.texts = Arrays.asList(texts);
+        this.texts = new ArrayList<>(Arrays.asList(texts));
     }
 
-    public List<String> getTexts() {
+    public final List<String> getTexts() {
         return texts;
     }
 
-    public void addTexts(String text) {
+    public final void addText(String text) {
         texts.add(text);
     }
 
-    public void removeTexts(String text) {
+    public final void removeText(String text) {
         texts.remove(text);
     }
 
-    public void clear() {
+    public final void clear() {
         texts.clear();
     }
 
