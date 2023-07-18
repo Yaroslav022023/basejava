@@ -4,17 +4,17 @@ import com.basejava.webapp.model.Resume;
 
 import java.util.*;
 
-public class MapResumeStorage extends AbstractStorage{
+public class MapResumeStorage extends AbstractStorage<Resume>{
     private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
-    protected final Object getSearchKey(String uuid) {
+    protected final Resume getSearchKey(String uuid) {
         return storage.get(uuid);
     }
 
     @Override
-    protected final List<Resume> doGetAllSorted() {
-        return new ArrayList<>(this.storage.values());
+    protected final List<Resume> doCopyAll() {
+        return new ArrayList<>(storage.values());
     }
 
     @Override
@@ -23,18 +23,18 @@ public class MapResumeStorage extends AbstractStorage{
     }
 
     @Override
-    protected final void doSave(Resume resume, Object index) {
+    protected final void doSave(Resume resume, Resume searchKey) {
         storage.put(resume.getUuid(), resume);
     }
 
     @Override
-    protected final void doDelete(Object searchKey) {
-        storage.remove(((Resume) searchKey).getUuid());
+    protected final void doDelete(Resume searchKey) {
+        storage.remove(searchKey.getUuid());
     }
 
     @Override
-    protected final Resume doGet(Object searchKey) {
-        return storage.get(((Resume) searchKey).getUuid());
+    protected final Resume doGet(Resume searchKey) {
+        return storage.get(searchKey.getUuid());
     }
 
     @Override
@@ -43,12 +43,12 @@ public class MapResumeStorage extends AbstractStorage{
     }
 
     @Override
-    protected final void doUpdate(Object searchKey, Resume resume) {
-        storage.replace(((Resume) searchKey).getUuid(), resume);
+    protected final void doUpdate(Resume searchKey, Resume resume) {
+        storage.replace(searchKey.getUuid(), resume);
     }
 
     @Override
-    protected final boolean isExisting(Object searchKey) {
+    protected final boolean isExisting(Resume searchKey) {
         return searchKey != null;
     }
 }

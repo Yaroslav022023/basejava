@@ -7,74 +7,93 @@ import com.basejava.webapp.model.Resume;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.util.Comparator.comparing;
 
-public abstract class AbstractStorage implements Storage {
+public abstract class AbstractStorage<SK> implements Storage {
+    private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
     protected static final Comparator<Resume> COMPARATOR =
             comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     @Override
     public final List<Resume> getAllSorted() {
-        List<Resume> storageSorted = new ArrayList<>(doGetAllSorted());
+        LOG.info("getAllSorted");
+
+        List<Resume> storageSorted = new ArrayList<>(doCopyAll());
         storageSorted.sort(COMPARATOR);
         return storageSorted;
     }
 
     @Override
     public final void save(Resume resume) {
-        Object searchedKey = findNotExistingSearchKey(resume.getUuid());
+        LOG.info("saved: " + resume);
+
+        SK searchedKey = checkNotExistingSearchKey(resume.getUuid());
         doSave(resume, searchedKey);
         System.out.println("The resume '" + resume.getUuid() + "' was successfully added.");
     }
 
     @Override
     public final void delete(String uuid) {
-        Object searchedKey = findExistingSearchKey(uuid);
+        LOG.info("deleted: " + uuid);
+
+        SK searchedKey = checkExistingSearchKey(uuid);
         doDelete(searchedKey);
         System.out.println("The resume '" + uuid + "' was successfully deleted.");
     }
 
     @Override
     public final Resume get(String uuid) {
-        return doGet(findExistingSearchKey(uuid));
+        LOG.info("got: " + uuid);
+
+        return doGet(checkExistingSearchKey(uuid));
     }
 
     @Override
     public final void clear() {
+        LOG.info("cleared");
+
         doClear();
         System.out.println("The storage has been cleared");
     }
 
     @Override
     public final void update(Resume resume) {
-        Object searchedKey = findExistingSearchKey(resume.getUuid());
+        LOG.info("updated: " + resume);
+
+        SK searchedKey = checkExistingSearchKey(resume.getUuid());
         doUpdate(searchedKey, resume);
         System.out.println("The resume '" + resume.getUuid() + "' was successfully updated.");
     }
 
-    private Object findNotExistingSearchKey(String uuid) {
-        Object searchedKey = getSearchKey(uuid);
+    private SK checkNotExistingSearchKey(String uuid) {
+        SK searchedKey = getSearchKey(uuid);
         if (!isExisting(searchedKey)) {
+            LOG.info("checkNotExistingSearchKey - passed: " + uuid);
             return searchedKey;
         }
+        LOG.log(Level.WARNING, "Resume '" + uuid + "' already exist");
         throw new ExistStorageException(uuid);
     }
 
-    private Object findExistingSearchKey(String uuid) {
-        Object searchedKey = getSearchKey(uuid);
+    private SK checkExistingSearchKey(String uuid) {
+        SK searchedKey = getSearchKey(uuid);
         if (isExisting(searchedKey)) {
+            LOG.info("checkExistingSearchKey - passed: " + uuid);
             return searchedKey;
         }
+        LOG.log(Level.WARNING, "Resume '" + uuid + "' not exist");
         throw new NotExistStorageException(uuid);
     }
 
-    protected abstract Object getSearchKey(String uuid);
-    protected abstract List<Resume> doGetAllSorted();
-    protected abstract void doSave(Resume resume, Object index);
-    protected abstract void doDelete(Object searchedKey);
-    protected abstract Resume doGet(Object searchedKey);
+    protected abstract SK getSearchKey(String uuid);
+    protected abstract List<Resume> doCopyAll();
+    protected abstract void doSave(Resume resume, SK searchedKey);
+    protected abstract void doDelete(SK searchedKey);
+    protected abstract Resume doGet(SK searchedKey);
     protected abstract void doClear();
-    protected abstract void doUpdate(Object searchedKey, Resume resume);
-    protected abstract boolean isExisting (Object searchKey);
+    protected abstract void doUpdate(SK searchedKey, Resume resume);
+    protected abstract boolean isExisting (SK searchKey);
 }
