@@ -6,6 +6,7 @@ public class TextSection extends Section{
     private String text;
 
     public TextSection(String text) {
+        Objects.requireNonNull(text, "text must be not null");
         this.text = text;
     }
 
@@ -15,6 +16,14 @@ public class TextSection extends Section{
 
     public final void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TextSection that = (TextSection) o;
+        return getText().equals(that.getText());
     }
 
     @Override

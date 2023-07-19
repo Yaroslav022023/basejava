@@ -9,6 +9,9 @@ public class ListSection extends Section{
     private final List<String> texts;
 
     public ListSection(String... texts) {
+        if (texts.length == 0) {
+            throw new NullPointerException("ListSection must be not null");
+        }
         this.texts = new ArrayList<>(Arrays.asList(texts));
     }
 
@@ -26,6 +29,14 @@ public class ListSection extends Section{
 
     public final void clear() {
         texts.clear();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListSection that = (ListSection) o;
+        return getTexts().equals(that.getTexts());
     }
 
     @Override

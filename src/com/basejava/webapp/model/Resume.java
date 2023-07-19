@@ -1,15 +1,12 @@
 package com.basejava.webapp.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Resume {
     private final String uuid;
     private final String fullName;
-    private final Map<ContactType, String> contacts = new HashMap<>();
-    private final Map<Sections, Section> sections = new HashMap<>();
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public Resume() {
         this(UUID.randomUUID().toString(), "");
@@ -38,32 +35,32 @@ public class Resume {
         return contacts;
     }
 
-    public final Map<Sections, Section> getAllSections() {
+    public final Map<SectionType, Section> getAllSections() {
         return sections;
     }
 
-    public final String getContact(ContactType contactType) {
-        return contacts.get(contactType);
+    public final String getContact(ContactType type) {
+        return contacts.get(type);
     }
 
-    public final Section getSection(Sections enumSection) {
-        return sections.get(enumSection);
+    public final Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
-    public final void changeContacts(ContactType contactType, String data) {
-        contacts.replace(contactType, data);
+    public final void changeContacts(ContactType type, String data) {
+        contacts.replace(type, data);
     }
 
-    public final void removeContacts(ContactType contactType) {
-        contacts.remove(contactType);
+    public final void removeContacts(ContactType type) {
+        contacts.remove(type);
     }
 
-    public final void addContacts(ContactType enumContactType, String data) {
-        contacts.put(enumContactType, data);
+    public final void addContacts(ContactType type, String data) {
+        contacts.put(type, data);
     }
 
-    public final void addSections(Sections enumSections, Section section) {
-        sections.put(enumSections, section);
+    public final void addSections(SectionType type, Section section) {
+        sections.put(type, section);
     }
 
     public final void clearContacts() {

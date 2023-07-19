@@ -9,19 +9,19 @@ public class Company {
     private String webSite;
     private final List<Period> periods = new ArrayList<>();
 
-    public Company(String nameCompany, String webSite, String tittle, String startDate,
+    public Company(String name, String webSite, String tittle, String startDate,
                    String endDate, String description) {
         Period period = new Period(tittle, startDate, endDate, description);
-        name = nameCompany;
+        this.name = name;
         this.webSite = webSite;
         periods.add(period);
 
     }
 
-    public Company(String nameCompany, String webSite, String tittle, String startDate,
+    public Company(String name, String webSite, String tittle, String startDate,
                    String endDate) {
         Period period = new Period(tittle, startDate, endDate);
-        name = nameCompany;
+        this.name = name;
         this.webSite = webSite;
         periods.add(period);
     }
@@ -116,6 +116,16 @@ public class Company {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Period period = (Period) o;
+            return getTittle().equals(period.getTittle()) && getStartDate().equals(period.getStartDate())
+                    && getEndDate().equals(period.getEndDate()) && Objects.equals(getDescription(),
+                    period.getDescription());
+        }
+
+        @Override
         public int hashCode() {
             return Objects.hash(getTittle(), getStartDate(), getEndDate(), getDescription());
         }
@@ -125,6 +135,15 @@ public class Company {
             return "tittle='" + tittle + "', startDate='" + startDate + "', endDate='" + endDate
                     + "', description='" + description + "'";
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Company company = (Company) o;
+        return getName().equals(company.getName()) && getWebSite().equals(company.getWebSite())
+                && getPeriods().equals(company.getPeriods());
     }
 
     @Override

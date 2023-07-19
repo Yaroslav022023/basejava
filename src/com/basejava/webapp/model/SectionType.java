@@ -1,6 +1,6 @@
 package com.basejava.webapp.model;
 
-public enum Sections {
+public enum SectionType {
     OBJECTIVE("Position"),
     PERSONAL("Personal qualities"),
     ACHIEVEMENT("Achievement"),
@@ -10,7 +10,7 @@ public enum Sections {
 
     private final String section;
 
-    Sections(String section) {
+    SectionType(String section) {
         this.section = section;
     }
 
