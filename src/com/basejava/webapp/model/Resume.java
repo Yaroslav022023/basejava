@@ -1,6 +1,9 @@
 package com.basejava.webapp.model;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Resume {
     private final String uuid;

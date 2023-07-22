@@ -1,5 +1,7 @@
 package com.basejava.webapp.model;
 
+import com.basejava.webapp.exceptions.NotExistCompanyException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,15 +42,15 @@ public class CompanySection extends Section{
                 return company;
             }
         }
-        return null;
+        throw new NotExistCompanyException();
     }
 
     public final void addCompany(Company company) {
         companies.add(company);
     }
 
-    public final void removeCompany(String nameCompany) {
-        companies.removeIf(company -> nameCompany.equals(company.getName()));
+    public final boolean removeCompany(String nameCompany) {
+        return companies.removeIf(company -> nameCompany.equals(company.getName()));
     }
 
     public final void clear() {

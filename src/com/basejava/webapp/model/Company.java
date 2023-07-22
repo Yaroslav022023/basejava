@@ -1,5 +1,7 @@
 package com.basejava.webapp.model;
 
+import com.basejava.webapp.exceptions.ExistPeriodException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,11 +49,21 @@ public class Company {
     }
 
     public final void addPeriod(String tittle, String startDate, String endDate, String description) {
+        for (Period period : periods) {
+            if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
+                throw new ExistPeriodException();
+            }
+        }
         Period period = new Period(tittle, startDate, endDate, description);
         periods.add(period);
     }
 
     public final void addPeriod(String tittle, String startDate, String endDate) {
+        for (Period period : periods) {
+            if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
+                throw new ExistPeriodException();
+            }
+        }
         Period period = new Period(tittle, startDate, endDate);
         periods.add(period);
     }

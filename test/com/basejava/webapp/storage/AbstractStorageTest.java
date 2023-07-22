@@ -1,8 +1,12 @@
 package com.basejava.webapp.storage;
 
-import com.basejava.webapp.exceptions.*;
+import com.basejava.webapp.ResumeTestData;
+import com.basejava.webapp.exceptions.ExistStorageException;
+import com.basejava.webapp.exceptions.NotExistStorageException;
 import com.basejava.webapp.model.Resume;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,10 +23,10 @@ public abstract class AbstractStorageTest {
     protected static final String FULL_NAME_2 = "FULL_NAME_2";
     protected static final String FULL_NAME_3 = "FULL_NAME_3";
     protected static final String FULL_NAME_4 = "FULL_NAME_4";
-    protected final Resume r1 = new Resume(UUID_1, FULL_NAME_1);
-    protected final Resume r2 = new Resume(UUID_2, FULL_NAME_2);
-    protected final Resume r3 = new Resume(UUID_3, FULL_NAME_3);
-    protected final Resume r4 = new Resume(UUID_4, FULL_NAME_4);
+    private final Resume r1 = ResumeTestData.createResume(UUID_1, FULL_NAME_1);
+    private final Resume r2 = ResumeTestData.createResume(UUID_2, FULL_NAME_2);
+    private final Resume r3 = ResumeTestData.createResume(UUID_3, FULL_NAME_3);
+    private final Resume r4 = ResumeTestData.createResume(UUID_4, FULL_NAME_4);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
