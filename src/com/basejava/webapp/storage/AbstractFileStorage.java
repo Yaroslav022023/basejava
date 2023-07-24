@@ -32,12 +32,13 @@ public abstract class AbstractFileStorage extends AbstractStorage<File>{
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
+        File[] files = directory.listFiles();
 
-        if (directory != null) {
-            File[] files = directory.listFiles();
-            for (File file : files) {
-                resumes.add(doRead(file));
-            }
+        if (files == null) {
+            throw new StorageException("'directory' is null", directory.getName());
+        }
+        for (File file : files) {
+            resumes.add(doGet(file));
         }
         return resumes;
     }
@@ -55,26 +56,27 @@ public abstract class AbstractFileStorage extends AbstractStorage<File>{
 
     @Override
     protected void doDelete(File file) {
-        File[] files = directory.listFiles();
-        for (File currentFile : files) {
-            if (currentFile == file) {
-                currentFile.delete();
-            }
-        }
+        file.delete();
     }
 
     @Override
     protected Resume doGet(File file) {
-        return doRead(file);
+        try {
+            return doRead(file);
+        } catch (IOException e) {
+            throw new StorageException("IO error", file.getName(), e);
+        }
     }
 
     @Override
     protected void doClear() {
-        if (directory != null) {
-            File[] files = directory.listFiles();
-            for (File file : files) {
-                file.delete();
-            }
+        File[] files = directory.listFiles();
+
+        if (files == null) {
+            throw new StorageException("'directory' is null", directory.getName());
+        }
+        for (File file : files) {
+            doDelete(file);
         }
     }
 
@@ -94,9 +96,10 @@ public abstract class AbstractFileStorage extends AbstractStorage<File>{
 
     @Override
     public int getSize() {
-        return Integer.getInteger(String.valueOf(directory.length()));
+        String[] nameFiles = directory.list();
+        return nameFiles.length;
     }
 
     protected abstract void doWrite(Resume resume, File file) throws IOException;
-    protected abstract Resume doRead(File file);
+    protected abstract Resume doRead(File file) throws IOException;
 }
