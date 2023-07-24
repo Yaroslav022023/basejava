@@ -2,35 +2,50 @@ package com.basejava.webapp.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ResumeTest extends AbstractResumeTest{
     @Test
-    void assertAllSection() {
-        //OBJECTIVE - TextSection
-        TextSection objective = new TextSection("text text text text text");
-        assertEquals(objective, resume.getSection(SectionType.OBJECTIVE));
+    void getUuid() {
+        assertEquals("UUID_1", resume.getUuid());
+    }
 
-        //PERSONAL - TextSection
-        TextSection personal = new TextSection("text text text text text");
-        assertEquals(personal, resume.getSection(SectionType.PERSONAL));
+    @Test
+    void getFullName() {
+        assertEquals("Tom Single", resume.getFullName());
+    }
 
-        //ACHIEVEMENT - ListSection
-        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
-        assertEquals(achievement, resume.getSection(SectionType.ACHIEVEMENT));
+    @Test
+    void getAllContacts() {
+        Map<ContactType, String> expected = new HashMap<>();
+        expected.put(ContactType.PHONE, "+1234567890");
+        expected.put(ContactType.SKYPE, "live:abc@gmail.com");
+        expected.put(ContactType.EMAIL, "abc@gmail.com");
+        expected.put(ContactType.LINKEDIN, "profile LINKEDIN");
+        expected.put(ContactType.GITHUB, "profile GitHub");
+        expected.put(ContactType.STACKOVERFLOW, "profile stackoverflow");
+        expected.put(ContactType.URL_HOMEPAGE, "http://abc.ru");
 
-        //QUALIFICATION - ListSection
-        ListSection qualification = new ListSection("text 10", "text 20", "text 30");
-        assertEquals(qualification, resume.getSection(SectionType.QUALIFICATION));
+        assertEquals(expected, resume.getAllContacts());
+    }
 
-        //EXPERIENCE - CompanySection
-        CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
-        assertEquals(experience, resume.getSection(SectionType.EXPERIENCE));
+    @Test
+    void getAllSections() {
+        Map<SectionType, Section> expected = new HashMap<>();
+        expected.put(SectionType.OBJECTIVE, new TextSection("text text text text text"));
+        expected.put(SectionType.PERSONAL, new TextSection("text text text text text"));
+        expected.put(SectionType.ACHIEVEMENT, new ListSection("text 1", "text 2", "text 3"));
+        expected.put(SectionType.QUALIFICATION, new ListSection("text 10", "text 20", "text 30"));
+        expected.put(SectionType.EXPERIENCE, new CompanySection(nameCompany,
+                webSite, title, startDate, endDate, description));
+        expected.put(SectionType.EDUCATION, new CompanySection(nameCompany,
+                webSite, title, startDate, endDate));
 
-        //EDUCATION - CompanySection
-        CompanySection education = new CompanySection(nameCompany, webSite, title, startDate, endDate);
-        assertEquals(education, resume.getSection(SectionType.EDUCATION));
+        assertEquals(expected, resume.getAllSections());
     }
 
     @Test
@@ -48,5 +63,59 @@ public class ResumeTest extends AbstractResumeTest{
     void notExistContacts() {
         assertNotEquals("+12345678901", resume.getContact(ContactType.PHONE));
         assertNotEquals("http://google.com", resume.getContact(ContactType.URL_HOMEPAGE));
+    }
+
+    @Test
+    void getSection() {
+        Map<SectionType, Section> expected = new HashMap<>();
+        expected.put(SectionType.OBJECTIVE, new TextSection("text text text text text"));
+
+        assertEquals(expected.get(SectionType.OBJECTIVE), resume.getSection(SectionType.OBJECTIVE));
+    }
+
+    @Test
+    void changeContacts() {
+        String newContact = "+110";
+        Map<ContactType, String> expected = new HashMap<>();
+        expected.put(ContactType.PHONE, "+1234567890");
+        expected.replace(ContactType.PHONE, newContact);
+        resume.changeContacts(ContactType.PHONE, newContact);
+
+        assertEquals(expected.get(ContactType.PHONE), resume.getContact(ContactType.PHONE));
+    }
+
+    @Test
+    void removeContacts() {
+        Map<ContactType, String> expected = new HashMap<>();
+        expected.put(ContactType.PHONE, "+1234567890");
+
+        assertEquals(expected.get(ContactType.PHONE), resume.getContact(ContactType.PHONE));
+
+        expected.remove(ContactType.PHONE);
+        resume.removeContacts(ContactType.PHONE);
+
+        assertEquals(expected.get(ContactType.PHONE), resume.getContact(ContactType.PHONE));
+    }
+
+    @Test
+    void addContacts() {
+        //All Contacts for object 'resume' already added.
+    }
+
+    @Test
+    void addSections() {
+        //All Sections for object 'resume' already added.
+    }
+
+    @Test
+    void clearContacts() {
+        resume.clearContacts();
+        assertEquals(0, resume.getAllContacts().size());
+    }
+
+    @Test
+    void clearSections() {
+        resume.clearSections();
+        assertEquals(0, resume.getAllSections().size());
     }
 }
