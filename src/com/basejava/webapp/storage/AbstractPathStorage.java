@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path>{
+public abstract class AbstractPathStorage extends AbstractStorage<Path> implements SerializationStrategy{
     private final Path directory;
 
     protected AbstractPathStorage(String dir) {
