@@ -2,31 +2,33 @@ package com.basejava.webapp.model;
 
 import com.basejava.webapp.exceptions.NotExistCompanyException;
 
+import java.io.Serial;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class CompanySection extends Section{
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final List<Company> companies = new ArrayList<>();
 
-    public CompanySection(String nameCompany, String webSite, String tittle, String startDate,
-                          String endDate, String description) {
+    public CompanySection(String nameCompany, String webSite, String tittle, LocalDate startDate,
+                          LocalDate endDate, String description) {
         Objects.requireNonNull(nameCompany, "nameCompany must be not null");
         Objects.requireNonNull(tittle, "tittle must be not null");
         Objects.requireNonNull(startDate, "startDate must be not null");
-        Objects.requireNonNull(endDate, "endDate must be not null");
         Objects.requireNonNull(description, "description must be not null");
 
         Company company = new Company(nameCompany, webSite, tittle, startDate, endDate, description);
         companies.add(company);
     }
 
-    public CompanySection(String nameCompany, String webSite, String tittle, String startDate,
-                          String endDate) {
+    public CompanySection(String nameCompany, String webSite, String tittle, LocalDate startDate,
+                          LocalDate endDate) {
         Objects.requireNonNull(nameCompany, "nameCompany must be not null");
         Objects.requireNonNull(tittle, "tittle must be not null");
         Objects.requireNonNull(startDate, "startDate must be not null");
-        Objects.requireNonNull(endDate, "endDate must be not null");
 
         Company company = new Company(nameCompany, webSite, tittle, startDate, endDate);
         companies.add(company);

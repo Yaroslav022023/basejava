@@ -3,6 +3,7 @@ package com.basejava.webapp.model;
 import com.basejava.webapp.exceptions.NotExistCompanyException;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,8 @@ public class CompanySectionTest extends AbstractResumeTest {
         String nameCompanyExperience = "Bus";
         String webSite = "http://bus.com";
         String title = "Some title of experience";
-        String startDate = "25.05.2021";
-        String endDate = "25.05.2021";
+        LocalDate startDate = LocalDate.parse("2021-05-25");
+        LocalDate endDate = LocalDate.parse("2021-05-25");
         String description = "some text of description";
 
         //EXPERIENCE

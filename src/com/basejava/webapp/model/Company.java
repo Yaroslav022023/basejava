@@ -2,17 +2,22 @@ package com.basejava.webapp.model;
 
 import com.basejava.webapp.exceptions.ExistPeriodException;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Company {
+public class Company implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String name;
     private String webSite;
     private final List<Period> periods = new ArrayList<>();
 
-    public Company(String name, String webSite, String tittle, String startDate,
-                   String endDate, String description) {
+    public Company(String name, String webSite, String tittle, LocalDate startDate,
+                   LocalDate endDate, String description) {
         Period period = new Period(tittle, startDate, endDate, description);
         this.name = name;
         this.webSite = webSite;
@@ -20,8 +25,8 @@ public class Company {
 
     }
 
-    public Company(String name, String webSite, String tittle, String startDate,
-                   String endDate) {
+    public Company(String name, String webSite, String tittle, LocalDate startDate,
+                   LocalDate endDate) {
         Period period = new Period(tittle, startDate, endDate);
         this.name = name;
         this.webSite = webSite;
@@ -48,7 +53,11 @@ public class Company {
         return periods;
     }
 
-    public final void addPeriod(String tittle, String startDate, String endDate, String description) {
+    public final void addPeriod(String tittle, LocalDate startDate, LocalDate endDate, String description) {
+        Objects.requireNonNull(tittle, "tittle must be not null");
+        Objects.requireNonNull(startDate, "startDate must be not null");
+        Objects.requireNonNull(description, "description must be not null");
+
         for (Period period : periods) {
             if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
                 throw new ExistPeriodException();
@@ -58,7 +67,10 @@ public class Company {
         periods.add(period);
     }
 
-    public final void addPeriod(String tittle, String startDate, String endDate) {
+    public final void addPeriod(String tittle, LocalDate startDate, LocalDate endDate) {
+        Objects.requireNonNull(tittle, "tittle must be not null");
+        Objects.requireNonNull(startDate, "startDate must be not null");
+
         for (Period period : periods) {
             if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
                 throw new ExistPeriodException();
@@ -76,20 +88,22 @@ public class Company {
         periods.clear();
     }
 
-    public class Period {
+    public class Period implements Serializable{
+        @Serial
+        private static final long serialVersionUID = 1L;
         private String tittle;
-        private String startDate;
-        private String endDate;
+        private LocalDate startDate;
+        private LocalDate endDate;
         private String description;
 
-        public Period(String tittle, String startDate, String dateEnd, String description) {
+        public Period(String tittle, LocalDate startDate, LocalDate dateEnd, String description) {
             this.tittle = tittle;
             this.startDate = startDate;
             this.endDate = dateEnd;
             this.description = description;
         }
 
-        public Period(String tittle, String startDate, String dateEnd) {
+        public Period(String tittle, LocalDate startDate, LocalDate dateEnd) {
             this.tittle = tittle;
             this.startDate = startDate;
             this.endDate = dateEnd;
@@ -103,20 +117,20 @@ public class Company {
             this.tittle = tittle;
         }
 
-        public final String getStartDate() {
+        public final LocalDate getStartDate() {
             return startDate;
         }
 
         public final void setStartDate(String startDate) {
-            this.startDate = startDate;
+            this.startDate = LocalDate.parse(startDate);
         }
 
-        public final String getEndDate() {
+        public final LocalDate getEndDate() {
             return endDate;
         }
 
         public final void setEndDate(String endDate) {
-            this.endDate = endDate;
+            this.endDate = LocalDate.parse(endDate);
         }
 
         public final String getDescription() {

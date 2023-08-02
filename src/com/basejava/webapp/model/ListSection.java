@@ -1,17 +1,18 @@
 package com.basejava.webapp.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class ListSection extends Section{
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final List<String> texts;
 
     public ListSection(String... texts) {
-        if (texts.length == 0) {
-            throw new NullPointerException("ListSection must be not null");
-        }
+        Objects.requireNonNull(texts, "text must be not null");
         this.texts = new ArrayList<>(Arrays.asList(texts));
     }
 

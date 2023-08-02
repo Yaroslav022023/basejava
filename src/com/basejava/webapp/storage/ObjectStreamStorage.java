@@ -1,0 +1,29 @@
+package com.basejava.webapp.storage;
+
+import com.basejava.webapp.exceptions.StorageException;
+import com.basejava.webapp.model.Resume;
+
+import java.io.*;
+
+public class ObjectStreamStorage extends AbstractFileStorage{
+
+    protected ObjectStreamStorage(File directory) {
+        super(directory);
+    }
+
+    @Override
+    protected void doWrite(Resume resume, OutputStream os) throws IOException {
+        try(ObjectOutputStream oos = new ObjectOutputStream(os)) {
+            oos.writeObject(resume);
+        }
+    }
+
+    @Override
+    protected Resume doRead(InputStream is) throws IOException {
+        try(ObjectInputStream ois = new ObjectInputStream(is)) {
+            return (Resume) ois.readObject();
+        } catch (ClassNotFoundException e) {
+            throw new StorageException("resume read error (incorrect type conversion 'Resume').", null, e);
+        }
+    }
+}

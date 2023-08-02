@@ -2,6 +2,8 @@ package com.basejava.webapp.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompanyTest extends AbstractResumeTest {
@@ -47,8 +49,8 @@ public class CompanyTest extends AbstractResumeTest {
     @Test
     void addPeriod() {
         String title = "New title";
-        String startDate = "01.09.2023";
-        String endDate = "05.09.2023";
+        LocalDate startDate = LocalDate.parse("2023-09-01");
+        LocalDate endDate = LocalDate.parse("2023-09-05");
         String description = "New description";
 
         //EXPERIENCE
@@ -61,8 +63,8 @@ public class CompanyTest extends AbstractResumeTest {
         //EDUCATION
         Company expectedCompany2 = new Company(nameCompany, webSite, this.title, this.startDate, this.endDate);
         String title2 = "New title";
-        String startDate2 = "10.09.2023";
-        String endDate2 = "15.09.2023";
+        LocalDate startDate2 = LocalDate.parse("2023-09-10");
+        LocalDate endDate2 = LocalDate.parse("2023-09-15");
         expectedCompany2.addPeriod(title2, startDate2, endDate2);
         ((CompanySection) resume.getSection(SectionType.EDUCATION)).getCompany(nameCompany)
                 .addPeriod(title2, startDate2, endDate2);

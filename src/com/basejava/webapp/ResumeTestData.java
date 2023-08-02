@@ -3,6 +3,7 @@ package com.basejava.webapp;
 import com.basejava.webapp.model.*;
 
 import java.io.File;
+import java.time.LocalDate;
 
 public class ResumeTestData {
     public static void main(String[] args) {
@@ -57,8 +58,8 @@ public class ResumeTestData {
         String nameCompany = "Air";
         String webSite = "http://air.com";
         String title = "some title of experience";
-        String startDate = "20.02.2023";
-        String endDate = "21.02.2023";
+        LocalDate startDate = LocalDate.parse("2023-02-20");
+        LocalDate endDate = LocalDate.parse("2023-02-21");
         String description = "Some text of description";
         CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
         resume.addSections(SectionType.EXPERIENCE, experience);
@@ -71,6 +72,7 @@ public class ResumeTestData {
         System.out.println("--Education (class section: CompanySection): \n"
                 + resume.getSection(SectionType.EDUCATION));
 
+        System.out.println();
         //------------------------------------------------------------------------------------------
         // Task 8. Recursively traversing and displaying filenames in directories and subdirectories
         // (root directory is my project)
@@ -79,16 +81,25 @@ public class ResumeTestData {
         outputNamesFilesProject(srcDirectory);
     }
 
+    static int countWhitespace = -1;
+
     private static void outputNamesFilesProject(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-
             assert files != null;
+
+            if (files.length == 1 && files[0].isDirectory()) {
+                countWhitespace += 2;
+            }
+            String formatDirectory = String.format("%" + countWhitespace + "s", "");
+            System.out.printf("%s%-10s\n", formatDirectory, file.getName());
+
             for (File currentFile : files) {
                 outputNamesFilesProject(currentFile);
             }
         } else {
-            System.out.println(file.getPath());
+            String formatFile = String.format("%" + (countWhitespace + 3) + "s", "");
+            System.out.printf("%s%-10s\n", formatFile, file.getName());
         }
     }
 
@@ -125,8 +136,8 @@ public class ResumeTestData {
         String nameCompany = "Air";
         String webSite = "http://air.com";
         String title = "some title of experience";
-        String startDate = "20.02.2023";
-        String endDate = "21.02.2023";
+        LocalDate startDate = LocalDate.parse("2023-02-20");
+        LocalDate endDate = LocalDate.parse("2023-02-21");
         String description = "Some text of description";
         CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
         resume.addSections(SectionType.EXPERIENCE, experience);

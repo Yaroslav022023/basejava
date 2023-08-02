@@ -37,7 +37,7 @@ public class PeriodTest extends AbstractResumeTest {
     @Test
     void setStartDate() {
         //EXPERIENCE
-        String newStartDate = "11.11.2023";
+        String newStartDate = "2023-11-11";
         expectedCompany.getPeriods().get(0).setStartDate(newStartDate);
         ((CompanySection) resume.getSection(SectionType.EXPERIENCE))
                 .getCompany(nameCompany).getPeriods().get(0).setStartDate(newStartDate);
@@ -58,7 +58,7 @@ public class PeriodTest extends AbstractResumeTest {
     @Test
     void setEndDate() {
         //EXPERIENCE
-        String newEndDate = "20.11.2023";
+        String newEndDate = "2023-11-20";
         expectedCompany.getPeriods().get(0).setEndDate(newEndDate);
         ((CompanySection) resume.getSection(SectionType.EXPERIENCE))
                 .getCompany(nameCompany).getPeriods().get(0).setEndDate(newEndDate);
