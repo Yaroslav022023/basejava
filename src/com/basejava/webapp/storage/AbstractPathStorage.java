@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> implements SerializationStrategy{
+public abstract class AbstractPathStorage extends AbstractStorage<Path>{
     private final Path directory;
 
     protected AbstractPathStorage(String dir) {
@@ -30,17 +30,14 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> implemen
 
     @Override
     protected Path getSearchKey(String uuid) {
-        return Path.of(String.valueOf(directory), uuid);
+        return directory.resolve(uuid);
     }
 
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
-
-        try (Stream<Path> paths = Files.list(directory)) {
+        try (Stream<Path> paths = getPaths("doCopyAll error.")){
             paths.forEach(path -> resumes.add(doGet(path)));
-        } catch (IOException e) {
-            throw new StorageException("doCopyAll error.", null);
         }
         return resumes;
     }
@@ -49,9 +46,15 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> implemen
     protected void doSave(Resume resume, Path path) {
         try {
             Files.createFile(path);
+        } catch (IOException e) {
+            throw new StorageException("path create error.", path.getFileName().toString(), e);
+        }
+
+        try {
             doWrite(resume, FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE));
         } catch (IOException e) {
-            throw new StorageException("Path save error.", path.getFileName().toString(), e);
+            throw new StorageException("path write error." + path.toAbsolutePath(),
+                    path.getFileName().toString(), e);
         }
     }
 
@@ -75,10 +78,8 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> implemen
 
     @Override
     protected void doClear() {
-        try (Stream<Path> path = Files.list(directory)){
-            path.forEach(this::doDelete);
-        } catch (IOException e) {
-            throw new StorageException("Path clear error.", null, e);
+        try (Stream<Path> paths = getPaths("Path clear error.")) {
+            paths.forEach(this::doDelete);
         }
     }
 
@@ -98,10 +99,16 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> implemen
 
     @Override
     public int getSize() {
-        try (Stream<Path> paths = Files.list(directory)) {
-           return (int) paths.count();
+        try (Stream<Path> paths = getPaths("directory read error (empty).")) {
+            return (int) paths.count();
+        }
+    }
+
+    private Stream<Path> getPaths(String textException) {
+        try {
+            return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException("directory read error (empty).", directory.getFileName().toString(), e);
+            throw new StorageException(textException, directory.getFileName().toString(), e);
         }
     }
 
