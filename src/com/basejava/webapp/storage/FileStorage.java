@@ -49,10 +49,10 @@ public class FileStorage extends AbstractStorage<File>{
             if (!file.createNewFile()) {
                 throw new StorageException("file was not created.", file.getName());
             }
-            strategy.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("file create error." + file.getAbsolutePath(), file.getName(), e);
         }
+        doUpdate(file, resume);
     }
 
     @Override

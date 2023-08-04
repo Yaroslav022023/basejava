@@ -53,12 +53,11 @@ public class PathStorage extends AbstractStorage<Path>{
     protected void doSave(Resume resume, Path path) {
         try {
             Files.createFile(path);
-            strategy.doWrite(resume, Channels.newOutputStream(FileChannel.open(path,
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE)));
         } catch (IOException e) {
             throw new StorageException("path write error." + path.toAbsolutePath(),
                     path.getFileName().toString(), e);
         }
+        doUpdate(path, resume);
     }
 
     @Override
