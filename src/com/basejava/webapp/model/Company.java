@@ -1,7 +1,11 @@
 package com.basejava.webapp.model;
 
 import com.basejava.webapp.exceptions.ExistPeriodException;
+import com.basejava.webapp.util.LocalDateAdapter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -9,12 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Company implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private String name;
     private String webSite;
     private final List<Period> periods = new ArrayList<>();
+
+    public Company() {}
 
     public Company(String name, String webSite, String tittle, LocalDate startDate,
                    LocalDate endDate, String description) {
@@ -88,13 +95,18 @@ public class Company implements Serializable {
         periods.clear();
     }
 
-    public class Period implements Serializable{
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Period implements Serializable{
         @Serial
         private static final long serialVersionUID = 1L;
         private String tittle;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate startDate;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate endDate;
         private String description;
+
+        public Period() {}
 
         public Period(String tittle, LocalDate startDate, LocalDate dateEnd, String description) {
             this.tittle = tittle;

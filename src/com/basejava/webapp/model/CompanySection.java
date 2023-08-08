@@ -13,6 +13,8 @@ public class CompanySection extends Section{
     private static final long serialVersionUID = 1L;
     private final List<Company> companies = new ArrayList<>();
 
+    public CompanySection() {}
+
     public CompanySection(String nameCompany, String webSite, String tittle, LocalDate startDate,
                           LocalDate endDate, String description) {
         Objects.requireNonNull(nameCompany, "nameCompany must be not null");

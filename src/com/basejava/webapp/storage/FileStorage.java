@@ -2,6 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exceptions.StorageException;
 import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.storage.serializer.StreamSerializerStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,9 +11,9 @@ import java.util.Objects;
 
 public class FileStorage extends AbstractStorage<File>{
     private final File directory;
-    private SerializationStrategy strategy;
+    private StreamSerializerStrategy strategy;
 
-    protected FileStorage(File directory, SerializationStrategy strategy) {
+    protected FileStorage(File directory, StreamSerializerStrategy strategy) {
         Objects.requireNonNull(directory, "directory must be not null.");
 
         if (!directory.isDirectory()) {
@@ -25,7 +26,7 @@ public class FileStorage extends AbstractStorage<File>{
         this.strategy = strategy;
     }
 
-    public void setStrategy(SerializationStrategy strategy) {
+    public void setStrategy(StreamSerializerStrategy strategy) {
         this.strategy = strategy;
     }
 
@@ -47,7 +48,7 @@ public class FileStorage extends AbstractStorage<File>{
     protected void doSave(Resume resume, File file) {
         try {
             if (!file.createNewFile()) {
-                throw new StorageException("file was not created.", file.getName());
+                throw new StorageException("file was not created (error).", file.getName());
             }
         } catch (IOException e) {
             throw new StorageException("file create error." + file.getAbsolutePath(), file.getName(), e);

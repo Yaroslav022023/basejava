@@ -2,6 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exceptions.StorageException;
 import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.storage.serializer.StreamSerializerStrategy;
 
 import java.io.IOException;
 import java.nio.channels.Channels;
@@ -17,9 +18,9 @@ import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path>{
     private final Path directory;
-    private SerializationStrategy strategy;
+    private StreamSerializerStrategy strategy;
 
-    protected PathStorage(String dir, SerializationStrategy strategy) {
+    protected PathStorage(String dir, StreamSerializerStrategy strategy) {
         Objects.requireNonNull(dir, "directory must be not null.");
         directory = Paths.get(dir);
         this.strategy = strategy;
@@ -31,7 +32,7 @@ public class PathStorage extends AbstractStorage<Path>{
         }
     }
 
-    public void setStrategy(SerializationStrategy strategy) {
+    public void setStrategy(StreamSerializerStrategy strategy) {
         this.strategy = strategy;
     }
 
@@ -54,7 +55,7 @@ public class PathStorage extends AbstractStorage<Path>{
         try {
             Files.createFile(path);
         } catch (IOException e) {
-            throw new StorageException("path write error." + path.toAbsolutePath(),
+            throw new StorageException("path was not created (error)." + path.toAbsolutePath(),
                     path.getFileName().toString(), e);
         }
         doUpdate(path, resume);
