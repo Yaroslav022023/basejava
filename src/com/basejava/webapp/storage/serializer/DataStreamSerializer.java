@@ -1,0 +1,122 @@
+package com.basejava.webapp.storage.serializer;
+
+import com.basejava.webapp.model.*;
+
+import java.io.*;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Objects;
+
+public class DataStreamSerializer implements StreamSerializerStrategy{
+    @Override
+    public void doWrite(Resume resume, OutputStream os) throws IOException {
+        try(DataOutputStream dos = new DataOutputStream(os)) {
+            dos.writeUTF(resume.getUuid());
+            dos.writeUTF(resume.getFullName());
+
+            Map<ContactType, String> contacts = resume.getAllContacts();
+            dos.writeInt(contacts.size());
+            for(Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
+            }
+
+            dos.writeInt(resume.getAllSections().size());
+            for(Map.Entry<SectionType, Section> entry : resume.getAllSections().entrySet()) {
+                dos.writeUTF(entry.getKey().name());
+
+                Section sectionValue = entry.getValue();
+
+                if (sectionValue instanceof TextSection ts) {
+                    dos.writeUTF(ts.getText());
+                } else if (sectionValue instanceof ListSection ls) {
+                    dos.writeInt(ls.getTexts().size());
+                    for(String string : ls.getTexts()) {
+                        dos.writeUTF(string);
+                    }
+                } else if (sectionValue instanceof CompanySection cs) {
+                    dos.writeInt(cs.getCompanies().size());
+                    for(Company company : cs.getCompanies()) {
+                        dos.writeUTF(company.getName());
+                        dos.writeUTF(company.getWebSite());
+
+                        dos.writeInt(company.getPeriods().size());
+                        for(Company.Period period : company.getPeriods()) {
+                            dos.writeUTF(period.getTitle());
+                            dos.writeUTF(period.getStartDate().toString());
+                            dos.writeUTF(period.getEndDate().toString());
+                            dos.writeUTF(Objects.toString(period.getDescription(), ""));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public Resume doRead(InputStream is) throws IOException {
+        Resume resume;
+        try (DataInputStream dis = new DataInputStream(is)) {
+            resume = new Resume(dis.readUTF(), dis.readUTF());
+
+            int amountContacts = dis.readInt();
+            for (int i = 0; i < amountContacts; i++) {
+                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+            }
+
+            int amountSections = dis.readInt();
+            for (int i = 0; i < amountSections; i++) {
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                switch (sectionType) {
+                    case OBJECTIVE, PERSONAL -> createTextSection(resume, sectionType, dis);
+                    case ACHIEVEMENT, QUALIFICATION -> createListSection(resume, sectionType, dis);
+                    case EXPERIENCE, EDUCATION -> createCompanySection(resume, sectionType, dis);
+                    default -> throw new IllegalArgumentException("Unsupported SectionType: " + sectionType);
+                }
+            }
+        }
+        return resume;
+    }
+
+    private void createTextSection(Resume resume, SectionType sectionType,
+                                   DataInputStream dis) throws IOException {
+        resume.addSection(sectionType, new TextSection(dis.readUTF()));
+    }
+
+    private void createListSection(Resume resume, SectionType sectionType,
+                                   DataInputStream dis) throws IOException {
+        int amountTexts = dis.readInt();
+        String[] texts = new String[amountTexts];
+        for (int i = 0; i < amountTexts; i++) {
+            texts[i] = dis.readUTF();
+        }
+        resume.addSection(sectionType, new ListSection(texts));
+    }
+
+    private void createCompanySection(Resume resume, SectionType sectionType,
+                                      DataInputStream dis) throws IOException {
+        CompanySection companySection = new CompanySection();
+        int amountCompanies = dis.readInt();
+        for (int i = 0; i < amountCompanies; i++) {
+            Company company = new Company();
+            company.setName(dis.readUTF());
+            company.setWebSite(dis.readUTF());
+
+            int amountPeriods = dis.readInt();
+            for (int j = 0; j < amountPeriods; j++) {
+                String title = dis.readUTF();
+                LocalDate startDate = LocalDate.parse(dis.readUTF());
+                LocalDate endDate = LocalDate.parse(dis.readUTF());
+                String description = dis.readUTF();
+
+                if (description.isEmpty()) {
+                    company.addPeriod(title, startDate, endDate);
+                } else {
+                    company.addPeriod(title, startDate, endDate, description);
+                }
+            }
+            companySection.addCompany(company);
+        }
+        resume.addSection(sectionType, companySection);
+    }
+}

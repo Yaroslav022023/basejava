@@ -8,22 +8,22 @@ public class PeriodTest extends AbstractResumeTest {
     @Test
     void getTittle() {
         //EXPERIENCE
-        assertEquals(expectedCompany.getPeriods().get(0).getTittle(),
+        assertEquals(expectedCompany.getPeriods().get(0).getTitle(),
                 ((CompanySection) resume.getSection(SectionType.EXPERIENCE))
-                        .getCompany(nameCompany).getPeriods().get(0).getTittle());
+                        .getCompany(nameCompany).getPeriods().get(0).getTitle());
     }
 
     @Test
     void setTittle() {
         //EXPERIENCE
         String newTitle = "new Title";
-        expectedCompany.getPeriods().get(0).setTittle(newTitle);
+        expectedCompany.getPeriods().get(0).setTitle(newTitle);
         ((CompanySection) resume.getSection(SectionType.EXPERIENCE))
-                .getCompany(nameCompany).getPeriods().get(0).setTittle(newTitle);
+                .getCompany(nameCompany).getPeriods().get(0).setTitle(newTitle);
 
-        assertEquals(expectedCompany.getPeriods().get(0).getTittle(),
+        assertEquals(expectedCompany.getPeriods().get(0).getTitle(),
                 ((CompanySection) resume.getSection(SectionType.EXPERIENCE))
-                        .getCompany(nameCompany).getPeriods().get(0).getTittle());
+                        .getCompany(nameCompany).getPeriods().get(0).getTitle());
     }
 
     @Test

@@ -67,11 +67,11 @@ public class Resume implements Serializable {
         contacts.remove(type);
     }
 
-    public final void addContacts(ContactType type, String data) {
+    public final void addContact(ContactType type, String data) {
         contacts.put(type, data);
     }
 
-    public final void addSections(SectionType type, Section section) {
+    public final void addSection(SectionType type, Section section) {
         sections.put(type, section);
     }
 

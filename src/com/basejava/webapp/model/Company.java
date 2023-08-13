@@ -99,7 +99,7 @@ public class Company implements Serializable {
     public static class Period implements Serializable{
         @Serial
         private static final long serialVersionUID = 1L;
-        private String tittle;
+        private String title;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate startDate;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
@@ -108,25 +108,25 @@ public class Company implements Serializable {
 
         public Period() {}
 
-        public Period(String tittle, LocalDate startDate, LocalDate dateEnd, String description) {
-            this.tittle = tittle;
+        public Period(String title, LocalDate startDate, LocalDate dateEnd, String description) {
+            this.title = title;
             this.startDate = startDate;
             this.endDate = dateEnd;
             this.description = description;
         }
 
-        public Period(String tittle, LocalDate startDate, LocalDate dateEnd) {
-            this.tittle = tittle;
+        public Period(String title, LocalDate startDate, LocalDate dateEnd) {
+            this.title = title;
             this.startDate = startDate;
             this.endDate = dateEnd;
         }
 
-        public final String getTittle() {
-            return tittle;
+        public final String getTitle() {
+            return title;
         }
 
-        public final void setTittle(String tittle) {
-            this.tittle = tittle;
+        public final void setTitle(String title) {
+            this.title = title;
         }
 
         public final LocalDate getStartDate() {
@@ -158,19 +158,19 @@ public class Company implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Period period = (Period) o;
-            return getTittle().equals(period.getTittle()) && getStartDate().equals(period.getStartDate())
+            return getTitle().equals(period.getTitle()) && getStartDate().equals(period.getStartDate())
                     && getEndDate().equals(period.getEndDate()) && Objects.equals(getDescription(),
                     period.getDescription());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(getTittle(), getStartDate(), getEndDate(), getDescription());
+            return Objects.hash(getTitle(), getStartDate(), getEndDate(), getDescription());
         }
 
         @Override
         public String toString() {
-            return "tittle='" + tittle + "', startDate='" + startDate + "', endDate='" + endDate
+            return "tittle='" + title + "', startDate='" + startDate + "', endDate='" + endDate
                     + "', description='" + description + "'";
         }
     }
