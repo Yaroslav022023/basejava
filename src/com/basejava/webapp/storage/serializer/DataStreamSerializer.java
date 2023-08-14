@@ -7,47 +7,51 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
-public class DataStreamSerializer implements StreamSerializerStrategy{
+public class DataStreamSerializer implements StreamSerializerStrategy {
     @Override
     public void doWrite(Resume resume, OutputStream os) throws IOException {
-        try(DataOutputStream dos = new DataOutputStream(os)) {
+        try (DataOutputStream dos = new DataOutputStream(os)) {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
 
             Map<ContactType, String> contacts = resume.getAllContacts();
             dos.writeInt(contacts.size());
-            for(Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
             }
 
             dos.writeInt(resume.getAllSections().size());
-            for(Map.Entry<SectionType, Section> entry : resume.getAllSections().entrySet()) {
+            for (Map.Entry<SectionType, Section> entry : resume.getAllSections().entrySet()) {
                 dos.writeUTF(entry.getKey().name());
 
                 Section sectionValue = entry.getValue();
 
-                if (sectionValue instanceof TextSection ts) {
-                    dos.writeUTF(ts.getText());
-                } else if (sectionValue instanceof ListSection ls) {
-                    dos.writeInt(ls.getTexts().size());
-                    for(String string : ls.getTexts()) {
-                        dos.writeUTF(string);
-                    }
-                } else if (sectionValue instanceof CompanySection cs) {
-                    dos.writeInt(cs.getCompanies().size());
-                    for(Company company : cs.getCompanies()) {
-                        dos.writeUTF(company.getName());
-                        dos.writeUTF(company.getWebSite());
-
-                        dos.writeInt(company.getPeriods().size());
-                        for(Company.Period period : company.getPeriods()) {
-                            dos.writeUTF(period.getTitle());
-                            dos.writeUTF(period.getStartDate().toString());
-                            dos.writeUTF(period.getEndDate().toString());
-                            dos.writeUTF(Objects.toString(period.getDescription(), ""));
+                switch (sectionValue) {
+                    case TextSection ts -> dos.writeUTF(ts.getText());
+                    case ListSection ls -> {
+                        dos.writeInt(ls.getTexts().size());
+                        for (String string : ls.getTexts()) {
+                            dos.writeUTF(string);
                         }
                     }
+                    case CompanySection cs -> {
+                        dos.writeInt(cs.getCompanies().size());
+                        for (Company company : cs.getCompanies()) {
+                            dos.writeUTF(company.getName());
+                            dos.writeUTF(company.getWebSite());
+
+                            dos.writeInt(company.getPeriods().size());
+                            for (Company.Period period : company.getPeriods()) {
+                                dos.writeUTF(period.getTitle());
+                                dos.writeUTF(period.getStartDate().toString());
+                                dos.writeUTF(period.getEndDate().toString());
+                                dos.writeUTF(Objects.toString(period.getDescription(), ""));
+                            }
+                        }
+                    }
+                    default -> throw new IllegalArgumentException("Unsupported Section class: " +
+                            sectionValue.getClass().getSimpleName());
                 }
             }
         }
@@ -71,7 +75,8 @@ public class DataStreamSerializer implements StreamSerializerStrategy{
                     case OBJECTIVE, PERSONAL -> createTextSection(resume, sectionType, dis);
                     case ACHIEVEMENT, QUALIFICATION -> createListSection(resume, sectionType, dis);
                     case EXPERIENCE, EDUCATION -> createCompanySection(resume, sectionType, dis);
-                    default -> throw new IllegalArgumentException("Unsupported SectionType: " + sectionType);
+                    default -> throw new IllegalArgumentException("Unsupported SectionType: "
+                            + sectionType);
                 }
             }
         }
