@@ -18,6 +18,10 @@ public class ListSection extends Section{
         this.texts = new ArrayList<>(Arrays.asList(texts));
     }
 
+    public ListSection(List<String> texts) {
+        this.texts = texts;
+    }
+
     public final List<String> getTexts() {
         return texts;
     }

@@ -4,6 +4,8 @@ import com.basejava.webapp.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -91,9 +93,9 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
     private void createListSection(Resume resume, SectionType sectionType,
                                    DataInputStream dis) throws IOException {
         int amountTexts = dis.readInt();
-        String[] texts = new String[amountTexts];
+        List<String> texts = new ArrayList<>();
         for (int i = 0; i < amountTexts; i++) {
-            texts[i] = dis.readUTF();
+            texts.add(dis.readUTF());
         }
         resume.addSection(sectionType, new ListSection(texts));
     }
@@ -114,11 +116,8 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                 LocalDate endDate = LocalDate.parse(dis.readUTF());
                 String description = dis.readUTF();
 
-                if (description.isEmpty()) {
-                    company.addPeriod(title, startDate, endDate);
-                } else {
-                    company.addPeriod(title, startDate, endDate, description);
-                }
+                company.addPeriod(new Company.Period(title, startDate, endDate,
+                        description.equals("") ? null : description));
             }
             companySection.addCompany(company);
         }

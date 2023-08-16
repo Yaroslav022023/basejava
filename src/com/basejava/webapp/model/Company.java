@@ -60,17 +60,7 @@ public class Company implements Serializable {
         return periods;
     }
 
-    public final void addPeriod(String tittle, LocalDate startDate, LocalDate endDate, String description) {
-        Objects.requireNonNull(tittle, "tittle must be not null");
-        Objects.requireNonNull(startDate, "startDate must be not null");
-        Objects.requireNonNull(description, "description must be not null");
-
-        for (Period period : periods) {
-            if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
-                throw new ExistPeriodException();
-            }
-        }
-        Period period = new Period(tittle, startDate, endDate, description);
+    public final void addPeriod(Period period) {
         periods.add(period);
     }
 
@@ -84,6 +74,20 @@ public class Company implements Serializable {
             }
         }
         Period period = new Period(tittle, startDate, endDate);
+        periods.add(period);
+    }
+
+    public final void addPeriod(String tittle, LocalDate startDate, LocalDate endDate, String description) {
+        Objects.requireNonNull(tittle, "tittle must be not null");
+        Objects.requireNonNull(startDate, "startDate must be not null");
+        Objects.requireNonNull(description, "description must be not null");
+
+        for (Period period : periods) {
+            if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
+                throw new ExistPeriodException();
+            }
+        }
+        Period period = new Period(tittle, startDate, endDate, description);
         periods.add(period);
     }
 
@@ -158,9 +162,10 @@ public class Company implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Period period = (Period) o;
-            return getTitle().equals(period.getTitle()) && getStartDate().equals(period.getStartDate())
-                    && getEndDate().equals(period.getEndDate()) && Objects.equals(getDescription(),
-                    period.getDescription());
+            return Objects.equals(getTitle(), period.getTitle()) &&
+                    Objects.equals(getStartDate(), period.getStartDate()) &&
+                    Objects.equals(getEndDate(), period.getEndDate()) &&
+                    Objects.equals(getDescription(), period.getDescription());
         }
 
         @Override
@@ -180,8 +185,9 @@ public class Company implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Company company = (Company) o;
-        return getName().equals(company.getName()) && getWebSite().equals(company.getWebSite())
-                && getPeriods().equals(company.getPeriods());
+        return Objects.equals(getName(), company.getName()) &&
+                Objects.equals(getWebSite(), company.getWebSite()) &&
+                Objects.equals(getPeriods(), company.getPeriods());
     }
 
     @Override
