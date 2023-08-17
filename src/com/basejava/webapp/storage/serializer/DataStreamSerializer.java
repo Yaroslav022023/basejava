@@ -1,13 +1,11 @@
 package com.basejava.webapp.storage.serializer;
 
 import com.basejava.webapp.model.*;
+import com.basejava.webapp.util.KeyValueDataStreamSaver;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class DataStreamSerializer implements StreamSerializerStrategy {
     @Override
@@ -18,10 +16,13 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
 
             Map<ContactType, String> contacts = resume.getAllContacts();
             dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue());
-            }
+            writeWithExeption(contacts.entrySet(), dos, (entries, outputStream) -> {
+                        for (Map.Entry<ContactType, String> entry : entries) {
+                            outputStream.writeUTF(entry.getKey().toString());
+                            outputStream.writeUTF(entry.getValue());
+                        }
+                    }
+            );
 
             dos.writeInt(resume.getAllSections().size());
             for (Map.Entry<SectionType, Section> entry : resume.getAllSections().entrySet()) {
@@ -122,5 +123,10 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             companySection.addCompany(company);
         }
         resume.addSection(sectionType, companySection);
+    }
+
+    private <K,V> void writeWithExeption(Collection<Map.Entry<K, V>> collection, DataOutputStream dos,
+                                         KeyValueDataStreamSaver<K, V> kvdss) throws IOException {
+        kvdss.saveToDataStream(collection, dos);
     }
 }
