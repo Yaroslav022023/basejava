@@ -14,45 +14,41 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
 
-            writeWithException(resume.getAllContacts().entrySet(), dos,
-                    (entries) -> {
-                        for (Object collection : entries) {
-                            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) collection;
-                            dos.writeUTF(entry.getKey().toString());
-                            dos.writeUTF(entry.getValue().toString());
-                        }
+            writeWithException(resume.getAllContacts().entrySet(), dos, (entries) -> {
+                for (Map.Entry<ContactType, String> entry : entries) {
+                    dos.writeUTF(entry.getKey().name());
+                    dos.writeUTF(entry.getValue());
+                }
             });
 
-            writeWithException(resume.getAllSections().entrySet(), dos,
-                    (entries) -> {
-                for (Object collection : entries) {
-                    Map.Entry<?, ?> entry = (Map.Entry<?, ?>) collection;
-                    dos.writeUTF(entry.getKey().toString());
-                    Section sectionValue = (Section) entry.getValue();
+            writeWithException(resume.getAllSections().entrySet(), dos, (entries) -> {
+                for (Map.Entry<SectionType, Section> entry : entries) {
+                    dos.writeUTF(entry.getKey().name());
+                    Section sectionValue = entry.getValue();
 
                     switch (sectionValue) {
                         case TextSection ts -> dos.writeUTF(ts.getText());
-                        case ListSection ls -> {
-                            dos.writeInt(ls.getTexts().size());
-                            for (String string : ls.getTexts()) {
-                                dos.writeUTF(string);
+                        case ListSection ls -> writeWithException(ls.getTexts(), dos, (texts) -> {
+                            for (String text : texts) {
+                                dos.writeUTF(text);
                             }
-                        }
-                        case CompanySection cs -> {
-                            dos.writeInt(cs.getCompanies().size());
-                            for (Company company : cs.getCompanies()) {
+                        });
+                        case CompanySection cs -> writeWithException(cs.getCompanies(), dos, (companies) -> {
+                            for (Company company : companies) {
                                 dos.writeUTF(company.getName());
                                 dos.writeUTF(company.getWebSite());
 
-                                dos.writeInt(company.getPeriods().size());
-                                for (Company.Period period : company.getPeriods()) {
-                                    dos.writeUTF(period.getTitle());
-                                    dos.writeUTF(period.getStartDate().toString());
-                                    dos.writeUTF(period.getEndDate().toString());
-                                    dos.writeUTF(Objects.toString(period.getDescription(), ""));
-                                }
+                                writeWithException(company.getPeriods(), dos, (periods) -> {
+                                    for (Company.Period period : periods) {
+                                        dos.writeUTF(period.getTitle());
+                                        dos.writeUTF(period.getStartDate().toString());
+                                        dos.writeUTF(period.getEndDate().toString());
+                                        dos.writeUTF(Objects.toString(period.getDescription(),
+                                                ""));
+                                    }
+                                });
                             }
-                        }
+                        });
                         default -> throw new IllegalArgumentException("Unsupported Section class: " +
                                 sectionValue.getClass().getSimpleName());
                     }
@@ -126,8 +122,8 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         resume.addSection(sectionType, companySection);
     }
 
-    private <K,V> void writeWithException(Collection<?> collection, DataOutputStream dos,
-                                          KeyValueDataStreamSaver<K, V> kvdss) throws IOException {
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dos,
+                                        KeyValueDataStreamSaver<T> kvdss) throws IOException {
         dos.writeInt(collection.size());
         kvdss.saveToDataStream(collection);
     }

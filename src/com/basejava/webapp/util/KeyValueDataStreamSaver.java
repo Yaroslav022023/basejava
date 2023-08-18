@@ -4,6 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 @FunctionalInterface
-public interface KeyValueDataStreamSaver<K, V> {
-    void saveToDataStream(Collection<?> collection) throws IOException;
+public interface KeyValueDataStreamSaver<T> {
+    void saveToDataStream(Collection<T> collection) throws IOException;
 }
