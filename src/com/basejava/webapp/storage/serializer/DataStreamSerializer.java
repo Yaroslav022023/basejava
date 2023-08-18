@@ -14,49 +14,50 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
 
-            Map<ContactType, String> contacts = resume.getAllContacts();
-            dos.writeInt(contacts.size());
-            writeWithExeption(contacts.entrySet(), dos, (entries, outputStream) -> {
-                        for (Map.Entry<ContactType, String> entry : entries) {
-                            outputStream.writeUTF(entry.getKey().toString());
-                            outputStream.writeUTF(entry.getValue());
+            writeWithException(resume.getAllContacts().entrySet(), dos,
+                    (entries) -> {
+                        for (Object collection : entries) {
+                            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) collection;
+                            dos.writeUTF(entry.getKey().toString());
+                            dos.writeUTF(entry.getValue().toString());
                         }
-                    }
-            );
+            });
 
-            dos.writeInt(resume.getAllSections().size());
-            for (Map.Entry<SectionType, Section> entry : resume.getAllSections().entrySet()) {
-                dos.writeUTF(entry.getKey().name());
+            writeWithException(resume.getAllSections().entrySet(), dos,
+                    (entries) -> {
+                for (Object collection : entries) {
+                    Map.Entry<?, ?> entry = (Map.Entry<?, ?>) collection;
+                    dos.writeUTF(entry.getKey().toString());
+                    Section sectionValue = (Section) entry.getValue();
 
-                Section sectionValue = entry.getValue();
-
-                switch (sectionValue) {
-                    case TextSection ts -> dos.writeUTF(ts.getText());
-                    case ListSection ls -> {
-                        dos.writeInt(ls.getTexts().size());
-                        for (String string : ls.getTexts()) {
-                            dos.writeUTF(string);
-                        }
-                    }
-                    case CompanySection cs -> {
-                        dos.writeInt(cs.getCompanies().size());
-                        for (Company company : cs.getCompanies()) {
-                            dos.writeUTF(company.getName());
-                            dos.writeUTF(company.getWebSite());
-
-                            dos.writeInt(company.getPeriods().size());
-                            for (Company.Period period : company.getPeriods()) {
-                                dos.writeUTF(period.getTitle());
-                                dos.writeUTF(period.getStartDate().toString());
-                                dos.writeUTF(period.getEndDate().toString());
-                                dos.writeUTF(Objects.toString(period.getDescription(), ""));
+                    switch (sectionValue) {
+                        case TextSection ts -> dos.writeUTF(ts.getText());
+                        case ListSection ls -> {
+                            dos.writeInt(ls.getTexts().size());
+                            for (String string : ls.getTexts()) {
+                                dos.writeUTF(string);
                             }
                         }
+                        case CompanySection cs -> {
+                            dos.writeInt(cs.getCompanies().size());
+                            for (Company company : cs.getCompanies()) {
+                                dos.writeUTF(company.getName());
+                                dos.writeUTF(company.getWebSite());
+
+                                dos.writeInt(company.getPeriods().size());
+                                for (Company.Period period : company.getPeriods()) {
+                                    dos.writeUTF(period.getTitle());
+                                    dos.writeUTF(period.getStartDate().toString());
+                                    dos.writeUTF(period.getEndDate().toString());
+                                    dos.writeUTF(Objects.toString(period.getDescription(), ""));
+                                }
+                            }
+                        }
+                        default -> throw new IllegalArgumentException("Unsupported Section class: " +
+                                sectionValue.getClass().getSimpleName());
                     }
-                    default -> throw new IllegalArgumentException("Unsupported Section class: " +
-                            sectionValue.getClass().getSimpleName());
                 }
-            }
+            });
         }
     }
 
@@ -125,8 +126,9 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         resume.addSection(sectionType, companySection);
     }
 
-    private <K,V> void writeWithExeption(Collection<Map.Entry<K, V>> collection, DataOutputStream dos,
-                                         KeyValueDataStreamSaver<K, V> kvdss) throws IOException {
-        kvdss.saveToDataStream(collection, dos);
+    private <K,V> void writeWithException(Collection<?> collection, DataOutputStream dos,
+                                          KeyValueDataStreamSaver<K, V> kvdss) throws IOException {
+        dos.writeInt(collection.size());
+        kvdss.saveToDataStream(collection);
     }
 }
