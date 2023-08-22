@@ -1,11 +1,15 @@
 package com.basejava.webapp.storage.serializer;
 
 import com.basejava.webapp.model.*;
+import com.basejava.webapp.util.KeyValueDataStreamReader;
 import com.basejava.webapp.util.KeyValueDataStreamSaver;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 public class DataStreamSerializer implements StreamSerializerStrategy {
     @Override
@@ -50,16 +54,13 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         try (DataInputStream dis = new DataInputStream(is)) {
             resume = new Resume(dis.readUTF(), dis.readUTF());
 
-            int amountContacts = dis.readInt();
-            for (int i = 0; i < amountContacts; i++) {
-                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
+            readWithException(resume, dis, r -> r.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
 
             int amountSections = dis.readInt();
             for (int i = 0; i < amountSections; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 switch (sectionType) {
-                    case OBJECTIVE, PERSONAL -> createTextSection(resume, sectionType, dis);
+                    case OBJECTIVE, PERSONAL -> resume.addSection(sectionType, new TextSection(dis.readUTF()));
                     case ACHIEVEMENT, QUALIFICATION -> createListSection(resume, sectionType, dis);
                     case EXPERIENCE, EDUCATION -> createCompanySection(resume, sectionType, dis);
                     default -> throw new IllegalArgumentException("Unsupported SectionType: "
@@ -70,9 +71,12 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
         return resume;
     }
 
-    private void createTextSection(Resume resume, SectionType sectionType,
-                                   DataInputStream dis) throws IOException {
-        resume.addSection(sectionType, new TextSection(dis.readUTF()));
+    private void readWithException(Resume resume, DataInputStream dis,
+                                   KeyValueDataStreamReader kvdsr) throws IOException {
+        int amount = dis.readInt();
+        for (int i = 0; i < amount; i++) {
+            kvdsr.readFromDataStream(resume);
+        }
     }
 
     private void createListSection(Resume resume, SectionType sectionType,
