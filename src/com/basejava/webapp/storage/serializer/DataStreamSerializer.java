@@ -56,8 +56,7 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
 
             readWithException(dis, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
 
-            int amountSections = dis.readInt();
-            for (int i = 0; i < amountSections; i++) {
+            readWithException(dis, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 switch (sectionType) {
                     case OBJECTIVE, PERSONAL -> resume.addSection(sectionType, new TextSection(dis.readUTF()));
@@ -88,7 +87,7 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
                     }
                     default -> throw new IllegalArgumentException("Unsupported SectionType: " + sectionType);
                 }
-            }
+            });
         }
         return resume;
     }
