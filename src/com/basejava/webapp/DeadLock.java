@@ -5,33 +5,20 @@ public class DeadLock {
     private static final Object LOCK_2 = new Object();
 
     public static void main(String[] args) {
-        new Thread(() -> {
-            synchronized (LOCK_1) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        new Thread(() -> actThread(LOCK_1, LOCK_2)).start();
+        new Thread(() -> actThread(LOCK_2, LOCK_1)).start();
+    }
 
-                synchronized (LOCK_2) {
-                    System.out.println("Succeeded to capture the monitor LOCK_2");
-                }
+    private static void actThread(Object lock1, Object lock2) {
+        synchronized (lock1) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-        }).start();
-
-        new Thread(() -> {
-            synchronized (LOCK_2) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                synchronized (LOCK_1) {
-                    System.out.println("Succeeded to capture the monitor LOCK_1");
-
-                }
+            synchronized (lock2) {
+                System.out.println("Succeeded to capture the monitor LOCK_2");
             }
-        }).start();
+        }
     }
 }
