@@ -19,8 +19,7 @@ public abstract class AbstractStorage<SK> implements Storage {
 
     @Override
     public final List<Resume> getAllSorted() {
-        LOG.info("getAllSorted");
-
+        LOG.info("getAllSorted - done");
         List<Resume> storageSorted = new ArrayList<>(doCopyAll());
         storageSorted.sort(COMPARATOR);
         return storageSorted;
@@ -29,43 +28,34 @@ public abstract class AbstractStorage<SK> implements Storage {
     @Override
     public final void save(Resume resume) {
         LOG.info("saved: " + resume);
-
         SK searchedKey = checkNotExistingSearchKey(resume.getUuid());
         doSave(resume, searchedKey);
-        System.out.println("The resume '" + resume.getUuid() + "' was successfully added.");
     }
 
     @Override
     public final void delete(String uuid) {
         LOG.info("deleted: " + uuid);
-
         SK searchedKey = checkExistingSearchKey(uuid);
         doDelete(searchedKey);
-        System.out.println("The resume '" + uuid + "' was successfully deleted.");
     }
 
     @Override
     public final Resume get(String uuid) {
         LOG.info("got: " + uuid);
-
         return doGet(checkExistingSearchKey(uuid));
     }
 
     @Override
     public final void clear() {
         LOG.info("cleared");
-
         doClear();
-        System.out.println("The storage has been cleared");
     }
 
     @Override
     public final void update(Resume resume) {
         LOG.info("updated: " + resume);
-
         SK searchedKey = checkExistingSearchKey(resume.getUuid());
         doUpdate(searchedKey, resume);
-        System.out.println("The resume '" + resume.getUuid() + "' was successfully updated.");
     }
 
     private SK checkNotExistingSearchKey(String uuid) {

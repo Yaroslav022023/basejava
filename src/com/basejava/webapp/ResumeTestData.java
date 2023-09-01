@@ -107,44 +107,44 @@ public class ResumeTestData {
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
 
-        //Contacts adding
-        resume.addContact(ContactType.PHONE, "+1234567890");
-        resume.addContact(ContactType.SKYPE, "live:abc@gmail.com");
-        resume.addContact(ContactType.EMAIL, "abc@gmail.com");
-        resume.addContact(ContactType.LINKEDIN, "profile LINKEDIN");
-        resume.addContact(ContactType.GITHUB, "profile GitHub");
-        resume.addContact(ContactType.STACKOVERFLOW, "profile stackoverflow");
-        resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
-
-        //OBJECTIVE enum Section
-        Section objective = new TextSection("text text text text text");
-        resume.addSection(SectionType.OBJECTIVE, objective);
-
-        //PERSONAL enum Section
-        Section personal = new TextSection("text text text text text");
-        resume.addSection(SectionType.PERSONAL, personal);
-
-        //ACHIEVEMENT enum Section
-        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
-        resume.addSection(SectionType.ACHIEVEMENT, achievement);
-
-        //QUALIFICATION enum Section
-        Section qualification = new ListSection("text 10", "text 20", "text 30");
-        resume.addSection(SectionType.QUALIFICATION, qualification);
-
-        //EXPERIENCE enum Section
-        String nameCompany = "Air";
-        String webSite = "http://air.com";
-        String title = "some title of experience";
-        LocalDate startDate = LocalDate.parse("2023-02-20");
-        LocalDate endDate = LocalDate.parse("2023-02-21");
-        String description = "Some text of description";
-        CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
-        resume.addSection(SectionType.EXPERIENCE, experience);
-
-        //EDUCATION enum Section
-        CompanySection education = new CompanySection(nameCompany, webSite, title, startDate, endDate);
-        resume.addSection(SectionType.EDUCATION, education);
+//        //Contacts adding
+//        resume.addContact(ContactType.PHONE, "+1234567890");
+//        resume.addContact(ContactType.SKYPE, "live:abc@gmail.com");
+//        resume.addContact(ContactType.EMAIL, "abc@gmail.com");
+//        resume.addContact(ContactType.LINKEDIN, "profile LINKEDIN");
+//        resume.addContact(ContactType.GITHUB, "profile GitHub");
+//        resume.addContact(ContactType.STACKOVERFLOW, "profile stackoverflow");
+//        resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
+//
+//        //OBJECTIVE enum Section
+//        Section objective = new TextSection("text text text text text");
+//        resume.addSection(SectionType.OBJECTIVE, objective);
+//
+//        //PERSONAL enum Section
+//        Section personal = new TextSection("text text text text text");
+//        resume.addSection(SectionType.PERSONAL, personal);
+//
+//        //ACHIEVEMENT enum Section
+//        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
+//        resume.addSection(SectionType.ACHIEVEMENT, achievement);
+//
+//        //QUALIFICATION enum Section
+//        Section qualification = new ListSection("text 10", "text 20", "text 30");
+//        resume.addSection(SectionType.QUALIFICATION, qualification);
+//
+//        //EXPERIENCE enum Section
+//        String nameCompany = "Air";
+//        String webSite = "http://air.com";
+//        String title = "some title of experience";
+//        LocalDate startDate = LocalDate.parse("2023-02-20");
+//        LocalDate endDate = LocalDate.parse("2023-02-21");
+//        String description = "Some text of description";
+//        CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
+//        resume.addSection(SectionType.EXPERIENCE, experience);
+//
+//        //EDUCATION enum Section
+//        CompanySection education = new CompanySection(nameCompany, webSite, title, startDate, endDate);
+//        resume.addSection(SectionType.EDUCATION, education);
 
         return resume;
     }
