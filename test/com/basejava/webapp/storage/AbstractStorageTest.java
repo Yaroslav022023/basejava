@@ -1,5 +1,6 @@
 package com.basejava.webapp.storage;
 
+import com.basejava.webapp.Config;
 import com.basejava.webapp.ResumeTestData;
 import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.NotExistStorageException;
@@ -15,8 +16,8 @@ import java.util.Comparator;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractStorageTest {
-    protected static final String STORAGE_DIR = "/Users/jaroslavyar/javaops/basejava/storage";
-    protected static final File STORAGE_DIR_FILE = new File(STORAGE_DIR);
+    protected static final String STORAGE_DIR = String.valueOf(Config.getInstance().getStorageDir());
+    protected static final File STORAGE_DIR_FILE = Config.getInstance().getStorageDir();
     protected final Storage storage;
     private static final String UUID_1 = "UUID_1";
     private static final String UUID_2 = "UUID_2";
