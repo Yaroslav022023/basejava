@@ -1,6 +1,6 @@
 package com.basejava.webapp.storage;
 
-import com.basejava.webapp.Config;
+import com.basejava.webapp.util.Config;
 
 public class SqlStorageTest extends AbstractStorageTest{
 

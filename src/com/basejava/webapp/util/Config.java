@@ -1,4 +1,4 @@
-package com.basejava.webapp;
+package com.basejava.webapp.util;
 
 import java.io.File;
 import java.io.FileInputStream;

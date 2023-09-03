@@ -1,6 +1,6 @@
 package com.basejava.webapp.storage;
 
-import com.basejava.webapp.Config;
+import com.basejava.webapp.util.Config;
 import com.basejava.webapp.ResumeTestData;
 import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.NotExistStorageException;

@@ -4,6 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface ConnectionFactory {
-    Connection getConnection() throws SQLException;
+public interface SqlExecutorWithReturn<T> {
+    T execute(Connection conn) throws SQLException;
 }
