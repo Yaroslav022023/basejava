@@ -1,5 +1,8 @@
 package com.basejava.webapp.util;
 
+import com.basejava.webapp.storage.SqlStorage;
+import com.basejava.webapp.storage.Storage;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,20 +11,17 @@ import java.util.Properties;
 
 public class Config {
     private static final Config INSTANCE = new Config();
+    private final Storage storage;
     private final File storageDir;
-    private final String url;
-    private final String user;
-    private final String password;
 
     private Config() {
         File PROPS = new File("config/resumes.properties");
         try (InputStream is = new FileInputStream(PROPS)) {
             Properties props = new Properties();
             props.load(is);
+            storage = new SqlStorage(props.getProperty("db.url"), props.getProperty("db.user"),
+                    props.getProperty("db.password"));
             storageDir = new File(props.getProperty("storage.dir"));
-            url = props.getProperty("db.url");
-            user = props.getProperty("db.user");
-            password = props.getProperty("db.password");
         } catch (IOException e) {
             throw new IllegalStateException("Error reading from " +
                     PROPS.getAbsolutePath() + ": " + e.getMessage(), e);
@@ -32,19 +32,11 @@ public class Config {
         return INSTANCE;
     }
 
+    public Storage getStorage() {
+        return storage;
+    }
+
     public File getStorageDir() {
         return storageDir;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }
