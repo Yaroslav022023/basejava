@@ -1,8 +1,6 @@
 package com.basejava.webapp.storage;
 
-import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.NotExistStorageException;
-import com.basejava.webapp.exceptions.StorageException;
 import com.basejava.webapp.model.Resume;
 import com.basejava.webapp.sql.ConnectionFactory;
 import com.basejava.webapp.sql.SqlHelper;
@@ -33,8 +31,8 @@ public class SqlStorage implements Storage {
                     List<Resume> resumes = new ArrayList<>();
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
-                        resumes.add(new Resume(rs.getString("uuid").trim(),
-                                rs.getString("full_name").trim()));
+                        resumes.add(new Resume(rs.getString("uuid"),
+                                rs.getString("full_name")));
                     }
                     LOG.info("getAllSorted - done");
                     return resumes;
@@ -64,13 +62,8 @@ public class SqlStorage implements Storage {
                         ps.setString(2, resume.getFullName());
                         return ps.execute();
                     } catch (SQLException e) {
-                        if ("23505".equals(e.getSQLState())) {
-                            LOG.log(Level.WARNING, "Resume '" + resume.getUuid() +
-                                    "' already exist");
-                            throw new ExistStorageException(resume.getUuid());
-                        }
-                        LOG.log(Level.SEVERE, "An SQL exception occurred", e);
-                        throw new StorageException(e);
+                        sqlHelper.checkExistingResume(e, resume.getUuid());
+                        return null;
                     }
                 });
         LOG.info("saved: " + resume);

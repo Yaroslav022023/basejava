@@ -1,5 +1,6 @@
 package com.basejava.webapp.sql;
 
+import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.StorageException;
 
 import java.sql.Connection;
@@ -36,5 +37,15 @@ public class SqlHelper {
             LOG.log(Level.SEVERE, "An SQL exception occurred", e);
             throw new StorageException(e);
         }
+    }
+
+    public void checkExistingResume(SQLException e, String uuid) {
+        if ("23505".equals(e.getSQLState())) {
+            LOG.log(Level.WARNING, "Resume '" + uuid +
+                    "' already exist");
+            throw new ExistStorageException(uuid);
+        }
+        LOG.log(Level.SEVERE, "An SQL exception occurred", e);
+        throw new StorageException(e);
     }
 }

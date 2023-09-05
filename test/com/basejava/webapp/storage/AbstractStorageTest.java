@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,10 +20,10 @@ public abstract class AbstractStorageTest {
     protected static final String STORAGE_DIR = String.valueOf(Config.getInstance().getStorageDir());
     protected static final File STORAGE_DIR_FILE = Config.getInstance().getStorageDir();
     protected final Storage storage;
-    private static final String UUID_1 = "UUID_1";
-    private static final String UUID_2 = "UUID_2";
-    private static final String UUID_3 = "UUID_3";
-    private static final String UUID_4 = "UUID_4";
+    private static final String UUID_1 = UUID.randomUUID().toString();
+    private static final String UUID_2 = UUID.randomUUID().toString();
+    private static final String UUID_3 = UUID.randomUUID().toString();
+    private static final String UUID_4 = UUID.randomUUID().toString();
     protected static final String FULL_NAME_1 = "FULL_NAME_1";
     protected static final String FULL_NAME_2 = "FULL_NAME_2";
     protected static final String FULL_NAME_3 = "FULL_NAME_3";
