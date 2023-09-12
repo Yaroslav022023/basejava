@@ -11,41 +11,24 @@ import java.util.logging.Logger;
 
 public class SqlHelper {
     private static final Logger LOG = Logger.getLogger(SqlHelper.class.getName());
-    private final Connection connection;
+    private final ConnectionFactory connectionFactory;
 
     public SqlHelper(ConnectionFactory connectionFactory) {
-        try {
-            connection = connectionFactory.getConnection();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Database connection error", e);
-            throw new StorageException(e);
-        }
+        this.connectionFactory = connectionFactory;
     }
 
     public <T> T executePreparedStatement(String sqlQuery, PreparedStatementExecutor<T> executor) {
-        return executeWithException(conn -> {
-            try (PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
-                return executor.execute(ps);
-            }
-        });
-    }
-
-    public <T> T executeWithException(SqlExecutor<T> executor) {
-        try {
-            return executor.execute(connection);
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
+            LOG.info("Got a connection to the database.");
+            return executor.execute(ps);
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "An SQL exception occurred", e);
+            if ("23505".equals(e.getSQLState())) {
+                LOG.log(Level.WARNING, "This resume already exists!!!");
+                throw new ExistStorageException(null);
+            }
+            LOG.log(Level.WARNING, "Occurred SqlException");
             throw new StorageException(e);
         }
-    }
-
-    public void checkExistingResume(SQLException e, String uuid) {
-        if ("23505".equals(e.getSQLState())) {
-            LOG.log(Level.WARNING, "Resume '" + uuid +
-                    "' already exist");
-            throw new ExistStorageException(uuid);
-        }
-        LOG.log(Level.SEVERE, "An SQL exception occurred", e);
-        throw new StorageException(e);
     }
 }

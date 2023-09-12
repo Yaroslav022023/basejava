@@ -8,7 +8,6 @@ import com.basejava.webapp.sql.SqlHelper;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,62 +25,55 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.executePreparedStatement(
-                "SELECT * FROM resume ORDER BY full_name, uuid", ps -> {
-                    List<Resume> resumes = new ArrayList<>();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        resumes.add(new Resume(rs.getString("uuid"),
-                                rs.getString("full_name")));
-                    }
-                    LOG.info("getAllSorted - done");
-                    return resumes;
-                });
+        return sqlHelper.executePreparedStatement("SELECT * FROM resume ORDER BY full_name, uuid", ps -> {
+            LOG.info("getAllSorted: Handling request...");
+            final ResultSet rs = ps.executeQuery();
+            final List<Resume> resumeList = new ArrayList<>();
+            while (rs.next()) {
+                resumeList.add(new Resume(rs.getString("uuid"),
+                        rs.getString("full_name")));
+            }
+            LOG.info("getAllSorted: Finish!!!");
+            return resumeList;
+        });
     }
 
     @Override
     public int getSize() {
-        return sqlHelper.executePreparedStatement(
-                "SELECT COUNT(*) FROM resume", ps -> {
-                    ResultSet rs = ps.executeQuery();
-                    if (rs.next()) {
-                        LOG.info("returned size resume database");
-                        return rs.getInt(1);
-                    }
-                    LOG.info("returned size '0' resume database");
-                    return 0;
-                });
+        return sqlHelper.executePreparedStatement("SELECT COUNT(*) FROM resume", ps -> {
+            LOG.info("getSize: Handling request...");
+            final ResultSet rs = ps.executeQuery();
+            final int size = rs.next() ? rs.getInt(1) : 0;
+            LOG.info("getSize: Finish!!! [size = %s]".formatted(size));
+            return size;
+        });
     }
 
     @Override
     public void save(Resume resume) {
-        sqlHelper.executePreparedStatement(
-                "INSERT INTO resume (uuid, full_name) VALUES (?,?)", ps -> {
-                    try {
-                        ps.setString(1, resume.getUuid());
-                        ps.setString(2, resume.getFullName());
-                        return ps.execute();
-                    } catch (SQLException e) {
-                        sqlHelper.checkExistingResume(e, resume.getUuid());
-                        return null;
-                    }
-                });
-        LOG.info("saved: " + resume);
+        sqlHelper.executePreparedStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)", ps -> {
+            LOG.info("save: Handling request...");
+            ps.setString(1, resume.getUuid());
+            ps.setString(2, resume.getFullName());
+            ps.execute();
+            LOG.info("save: Finish save resume [%s]".formatted(resume.toString()));
+            return null;
+        });
     }
 
     @Override
     public void delete(String uuid) {
         Integer affectedRows = sqlHelper.executePreparedStatement(
                 "DELETE FROM resume r WHERE r.uuid = ?", ps -> {
+                    LOG.info("delete: Handling request...");
                     ps.setString(1, uuid);
-                    return ps.executeUpdate();
+                    if (ps.executeUpdate() == 0) {
+                        LOG.log(Level.WARNING, "Resume '%s' not exist".formatted(uuid));
+                        throw new NotExistStorageException(uuid);
+                    }
+                    LOG.info("delete: Finish delete resume [%s]".formatted(uuid));
+                    return null;
                 });
-
-        if (affectedRows == 0) {
-            LOG.log(Level.WARNING, "Resume '" + uuid + "' not exist");
-            throw new NotExistStorageException(uuid);
-        }
-        LOG.info("deleted: " + uuid);
     }
 
     @Override
