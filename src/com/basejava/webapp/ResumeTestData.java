@@ -107,14 +107,14 @@ public class ResumeTestData {
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
 
-//        //Contacts adding
-//        resume.addContact(ContactType.PHONE, "+1234567890");
-//        resume.addContact(ContactType.SKYPE, "live:abc@gmail.com");
-//        resume.addContact(ContactType.EMAIL, "abc@gmail.com");
-//        resume.addContact(ContactType.LINKEDIN, "profile LINKEDIN");
-//        resume.addContact(ContactType.GITHUB, "profile GitHub");
-//        resume.addContact(ContactType.STACKOVERFLOW, "profile stackoverflow");
-//        resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
+        //Contacts adding
+        resume.addContact(ContactType.PHONE, "+1234567890");
+        resume.addContact(ContactType.SKYPE, "live:abc@gmail.com");
+        resume.addContact(ContactType.EMAIL, "abc@gmail.com");
+        resume.addContact(ContactType.LINKEDIN, "profile LINKEDIN");
+        resume.addContact(ContactType.GITHUB, "profile GitHub");
+        resume.addContact(ContactType.STACKOVERFLOW, "profile stackoverflow");
+        resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
 //
 //        //OBJECTIVE enum Section
 //        Section objective = new TextSection("text text text text text");
