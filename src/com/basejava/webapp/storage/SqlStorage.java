@@ -1,7 +1,6 @@
 package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exceptions.NotExistStorageException;
-import com.basejava.webapp.model.ContactType;
 import com.basejava.webapp.model.Resume;
 import com.basejava.webapp.sql.ConnectionFactory;
 import com.basejava.webapp.sql.SqlHelper;
@@ -28,30 +27,25 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.executePreparedStatement(
                 "SELECT * " +
-                        "  FROM resume " +
-                        " ORDER BY full_name, uuid",
+                        "  FROM resume r " +
+                        "  LEFT JOIN contact c " +
+                        "    ON r.uuid = c.resume_uuid " +
+                        " ORDER BY r.full_name, r.uuid",
                 ps -> {
                     LOG.info("getAllSorted: Handling request...");
                     final ResultSet rs = ps.executeQuery();
                     final List<Resume> resumeList = new ArrayList<>();
-                    while (rs.next()) {
-                        Resume resume = new Resume(rs.getString("uuid"),
-                                rs.getString("full_name"));
-                        sqlHelper.executePreparedStatement(
-                                "SELECT type, value " +
-                                        "  FROM contact " +
-                                        " WHERE resume_uuid = ?",
-                                ps1 -> {
-                                    LOG.info("get contacts: Handling request...");
-                                    ps1.setString(1, rs.getString("uuid"));
-                                    ResultSet resultSet = ps1.executeQuery();
-                                    while (resultSet.next()) {
-                                        resume.addContact(ContactType.valueOf(resultSet.getString("type")),
-                                                resultSet.getString("value"));
-                                    }
-                                    LOG.info("get contacts: Finish!!!");
-                                    return null;
-                                });
+                    boolean hasMoreRows = rs.next();
+                    while (hasMoreRows) {
+                        String uuid = rs.getString("uuid");
+                        Resume resume = new Resume(uuid, rs.getString("full_name"));
+
+                        LOG.info("get contacts: Handling request...");
+                        do {
+                            sqlHelper.addContacts(rs, resume);
+                            hasMoreRows = rs.next();
+                        } while (hasMoreRows && uuid.equals(rs.getString("resume_uuid")));
+                        LOG.info("get contacts: Finish for resume: %s".formatted(uuid));
                         resumeList.add(resume);
                     }
                     LOG.info("getAllSorted: Finish!!!");
@@ -135,14 +129,10 @@ public class SqlStorage implements Storage {
                         LOG.log(Level.WARNING, "Resume '" + uuid + "' not exist");
                         throw new NotExistStorageException(uuid);
                     }
-
                     final Resume resume = new Resume(uuid, rs.getString("full_name"));
                     do {
-                        String value = rs.getString("value");
-                        ContactType type = ContactType.valueOf(rs.getString("type"));
-                        resume.addContact(type, value);
+                        sqlHelper.addContacts(rs, resume);
                     } while (rs.next());
-
                     LOG.info("got resume: " + uuid);
                     return resume;
                 });

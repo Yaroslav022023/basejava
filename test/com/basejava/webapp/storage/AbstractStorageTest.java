@@ -61,6 +61,26 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
+    void getAllSorted2() {
+        // Creating resume without contacts and sections.
+        // r1, r2 - with contacts and sections, r3 - without.
+        final String UUID_5 = UUID.randomUUID().toString();
+        final String FULL_NAME_5 = "FULL_NAME_5";
+        final Resume r3 = ResumeTestData.createResumeWithoutContactAndSection(UUID_5, FULL_NAME_5);
+
+        ArrayList<Resume> expected = new ArrayList<>();
+        expected.add(r1);
+        expected.add(r2);
+        expected.add(r3);
+        expected.sort(combinedComparator());
+
+        storage.delete(UUID_3);
+        storage.save(r3);
+
+        assertIterableEquals(expected, storage.getAllSorted());
+    }
+
+    @Test
     void size() {
         assertSize(3);
     }

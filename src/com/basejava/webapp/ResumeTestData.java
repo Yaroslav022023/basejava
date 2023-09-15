@@ -102,6 +102,9 @@ public class ResumeTestData {
             System.out.printf("%s%-10s\n", formatFile, file.getName());
         }
     }
+    public static Resume createResumeWithoutContactAndSection(String uuid, String fullName) {
+        return new Resume(uuid, fullName);
+    }
 
     // Task 8. Method for test class AbstractStorageTest.
     public static Resume createResume(String uuid, String fullName) {

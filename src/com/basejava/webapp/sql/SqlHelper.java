@@ -2,9 +2,12 @@ package com.basejava.webapp.sql;
 
 import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.StorageException;
+import com.basejava.webapp.model.ContactType;
+import com.basejava.webapp.model.Resume;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.logging.Level;
@@ -62,6 +65,18 @@ public class SqlHelper {
             LOG.info("Completed executeBatch()");
         } catch (SQLException e) {
             LOG.log(Level.WARNING, "Occurred SqlException", e);
+            throw new StorageException(e);
+        }
+    }
+
+    public void addContacts(ResultSet rs, Resume resume) {
+        try {
+            String value = rs.getString("value");
+            if (value != null) {
+                resume.addContact(ContactType.valueOf(rs.getString("type")), value);
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.WARNING, "SQLException occurred while trying to get 'value' from the database", e);
             throw new StorageException(e);
         }
     }
