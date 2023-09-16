@@ -21,27 +21,23 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T executePreparedStatement(String sqlQuery, PreparedStatementExecutor<T> executor) {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
+    public <T> T executePreparedStatement(Connection conn, String sqlQuery, PreparedStatementExecutor<T> executor) {
+        try (PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
             LOG.info("Got a connection to the database.");
             return executor.execute(ps);
         } catch (SQLException e) {
-            if ("23505".equals(e.getSQLState())) {
-                LOG.log(Level.WARNING, "This resume already exists !!!", e);
-                throw new ExistStorageException(null);
-            }
-            LOG.log(Level.WARNING, "Occurred SqlException", e);
+            handleSQLException(e);
             throw new StorageException(e);
         }
     }
 
-    public <T> T transactionalExecute(String sqlQuery, PreparedStatementExecutor<T> executor) {
+    public <T> T transactionalExecute(ConnectionExecutor<T> executor) {
         try (Connection conn = connectionFactory.getConnection()) {
             try {
                 conn.setAutoCommit(false);
-                T result = executePreparedStatement(sqlQuery, executor);
+                T result = executor.execute(conn);
                 conn.commit();
+                LOG.info("Completed: conn.commit())");
                 return result;
             } catch (SQLException e) {
                 LOG.log(Level.WARNING, "The transaction has been canceled. Invoking 'conn.rollback()'", e);
@@ -79,5 +75,13 @@ public class SqlHelper {
             LOG.log(Level.WARNING, "SQLException occurred while trying to get 'value' from the database", e);
             throw new StorageException(e);
         }
+    }
+
+    private void handleSQLException(SQLException e) {
+        if ("23505".equals(e.getSQLState())) {
+            LOG.log(Level.WARNING, "This resume already exists !!!", e);
+            throw new ExistStorageException(null);
+        }
+        LOG.log(Level.WARNING, "Occurred SqlException", e);
     }
 }

@@ -118,7 +118,7 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    void update(){
+    void update() {
         assertEquals(r1, storage.get(r1.getUuid()));
         storage.update(r1);
 
