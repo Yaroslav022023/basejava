@@ -40,7 +40,6 @@ public class SqlStorage implements Storage {
                             while (hasMoreRows) {
                                 String uuid = rs.getString("uuid");
                                 Resume resume = new Resume(uuid, rs.getString("full_name"));
-
                                 LOG.info("get contacts: Handling request...");
                                 do {
                                     sqlHelper.addContacts(rs, resume);
@@ -182,7 +181,8 @@ public class SqlStorage implements Storage {
                                             ps1.setString(2, resume.getUuid());
                                             ps1.setString(3, entry.getKey().name());
                                         });
-                                        LOG.info("update contacts: Finish! Updated contacts [%s]".formatted(resume.getAllContacts()));
+                                        LOG.info("update contacts: Finish! Updated contacts [%s]".
+                                                formatted(resume.getAllContacts()));
                                         return null;
                                     });
                             LOG.info("update: Finish! Updated: " + resume);
