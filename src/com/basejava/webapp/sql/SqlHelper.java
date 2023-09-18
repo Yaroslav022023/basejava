@@ -21,12 +21,11 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T executePreparedStatement(Connection conn, String sqlQuery, PreparedStatementExecutor<T> executor) {
-        try (PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
-            LOG.info("Got a connection to the database.");
-            return executor.execute(ps);
+    public <T> T provideConnection(ConnectionExecutor<T> executor) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            return executor.execute(conn);
         } catch (SQLException e) {
-            handleSQLException(e);
+            LOG.log(Level.WARNING, "Error during provideConnection()", e);
             throw new StorageException(e);
         }
     }
@@ -50,10 +49,22 @@ public class SqlHelper {
         }
     }
 
-    public <K, V> void iterateAndBatchExecute(Map<K, V> data, PreparedStatement ps, MapEntryConsumer<K, V> executor) {
+    public <T> T executePreparedStatement(Connection conn, String sqlQuery, PreparedStatementExecutor<T> executor) {
+        try (PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
+            LOG.info("Got a connection to the database.");
+            return executor.execute(ps);
+        } catch (SQLException e) {
+            handleSQLException(e);
+            throw new StorageException(e);
+        }
+    }
+
+    public void iterateContactsAndBatchExecute(Resume resume, PreparedStatement ps) {
         try {
-            for (Map.Entry<K, V> entry : data.entrySet()) {
-                executor.execute(entry);
+            for (Map.Entry<ContactType, String> entry : resume.getAllContacts().entrySet()) {
+                ps.setString(1, resume.getUuid());
+                ps.setString(2, entry.getKey().name());
+                ps.setString(3, entry.getValue());
                 ps.addBatch();
             }
             LOG.info("Completed all addBatch() in loop for()");
@@ -65,7 +76,7 @@ public class SqlHelper {
         }
     }
 
-    public void addContacts(ResultSet rs, Resume resume) {
+    public void addContact(ResultSet rs, Resume resume) {
         try {
             String value = rs.getString("value");
             if (value != null) {
