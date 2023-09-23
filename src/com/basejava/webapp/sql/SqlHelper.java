@@ -21,9 +21,10 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T provideConnection(ConnectionExecutor<T> executor) {
-        try (Connection conn = connectionFactory.getConnection()) {
-            return executor.execute(conn);
+    public <T> T provideConnection(String sqlQuery, PreparedStatementExecutor<T> executor) {
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
+            return executor.execute(ps);
         } catch (SQLException e) {
             LOG.log(Level.WARNING, "Error during provideConnection()", e);
             throw new StorageException(e);

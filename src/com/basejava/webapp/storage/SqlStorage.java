@@ -27,7 +27,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.provideConnection(conn -> sqlHelper.executePreparedStatement(conn,
+        return sqlHelper.provideConnection(
                 "SELECT * " +
                         "  FROM resume r " +
                         "  LEFT JOIN contact c " +
@@ -53,26 +53,21 @@ public class SqlStorage implements Storage {
                     }
                     LOG.info("getAllSorted: Finish!!!");
                     return new ArrayList<>(resumeMap.values());
-                }));
-
+                });
     }
 
     @Override
     public int getSize() {
-        return sqlHelper.provideConnection(conn -> sqlHelper.executePreparedStatement(conn,
+        return sqlHelper.provideConnection(
                 "SELECT COUNT(*) " +
                         "  FROM resume",
                 ps -> {
                     LOG.info("getSize: Handling request...");
-                    try {
-                        final ResultSet rs = ps.executeQuery();
-                        final int size = rs.next() ? rs.getInt(1) : 0;
-                        LOG.info("getSize: Finish!!! [size = %s]".formatted(size));
-                        return size;
-                    } finally {
-                        conn.close();
-                    }
-                }));
+                    final ResultSet rs = ps.executeQuery();
+                    final int size = rs.next() ? rs.getInt(1) : 0;
+                    LOG.info("getSize: Finish!!! [size = %s]".formatted(size));
+                    return size;
+                });
     }
 
     @Override
@@ -123,7 +118,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        return sqlHelper.provideConnection(conn -> sqlHelper.executePreparedStatement(conn,
+        return sqlHelper.provideConnection(
                 "SELECT * " +
                         "  FROM resume r " +
                         "  LEFT JOIN contact c ON r.uuid = c.resume_uuid " +
@@ -142,7 +137,7 @@ public class SqlStorage implements Storage {
                     } while (rs.next());
                     LOG.info("get: Finish! Got resume: " + uuid);
                     return resume;
-                }));
+                });
     }
 
     @Override
