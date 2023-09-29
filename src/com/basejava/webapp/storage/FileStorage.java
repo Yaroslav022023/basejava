@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class FileStorage extends AbstractStorage<File>{
     private final File directory;
-    private StreamSerializerStrategy strategy;
+    private final StreamSerializerStrategy strategy;
 
     protected FileStorage(File directory, StreamSerializerStrategy strategy) {
         Objects.requireNonNull(directory, "directory must be not null.");
@@ -23,10 +23,6 @@ public class FileStorage extends AbstractStorage<File>{
                     " - is not readable / writeable directory.");
         }
         this.directory = directory;
-        this.strategy = strategy;
-    }
-
-    public void setStrategy(StreamSerializerStrategy strategy) {
         this.strategy = strategy;
     }
 

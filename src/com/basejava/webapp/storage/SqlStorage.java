@@ -2,6 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exceptions.NotExistStorageException;
 import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.model.SectionType;
 import com.basejava.webapp.sql.ConnectionFactory;
 import com.basejava.webapp.sql.SqlHelper;
 
@@ -27,33 +28,52 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.provideConnection(
+        final Map<String, Resume> resumeMap = new LinkedHashMap<>();
+
+        LOG.info("getAllSorted()...");
+        sqlHelper.provideConnection(
                 "SELECT * " +
                         "  FROM resume r " +
-                        "  LEFT JOIN contact c " +
-                        "    ON r.uuid = c.resume_uuid " +
                         " ORDER BY r.full_name, r.uuid",
                 ps -> {
-                    LOG.info("getAllSorted: Handling request...");
+                    LOG.info("SELECT table 'resume': Handling request...");
                     final ResultSet rs = ps.executeQuery();
-                    final Map<String, Resume> resumeMap = new LinkedHashMap<>();
                     while (rs.next()) {
                         String uuid = rs.getString("uuid");
-                        boolean existResume = resumeMap.containsKey(uuid);
-                        final Resume resume = existResume ?
-                                resumeMap.get(uuid) :
-                                new Resume(uuid, rs.getString("full_name"));
-
-                        LOG.info("get contact: Handling request...");
-                        sqlHelper.addContact(rs, resume);
-                        LOG.info("get contact: Finish for resume: %s".formatted(uuid));
-                        if (!existResume) {
-                            resumeMap.put(uuid, resume);
-                        }
+                        resumeMap.put(uuid, new Resume(uuid, rs.getString("full_name")));
                     }
-                    LOG.info("getAllSorted: Finish!!!");
-                    return new ArrayList<>(resumeMap.values());
+                    return null;
                 });
+
+        sqlHelper.provideConnection(
+                "SELECT " +
+                        "     c.type AS contact_type, " +
+                        "     c.value AS contact_value, " +
+                        "     c.resume_uuid " +
+                        "  FROM contact c ",
+                ps -> {
+                    LOG.info("SELECT table 'contact': Handling request...");
+                    final ResultSet rs = ps.executeQuery();
+                    sqlHelper.handleQueryResultRows(rs, resumeMap, resume -> sqlHelper.addContact(rs, resume));
+                    LOG.info("SELECT table 'contact': Finish!");
+                    return null;
+                });
+
+        sqlHelper.provideConnection(
+                "SELECT " +
+                        "     o.objective, " +
+                        "     o.resume_uuid " +
+                        "  FROM section o ",
+                ps -> {
+                    LOG.info("SELECT table 'section': Handling request...");
+                    final ResultSet rs = ps.executeQuery();
+                    sqlHelper.handleQueryResultRows(rs, resumeMap, resume -> sqlHelper.addTextSection(rs,
+                            "objective", resume, SectionType.OBJECTIVE));
+                    LOG.info("SELECT table 'section': Finish!");
+                    return null;
+                });
+        LOG.info("getAllSorted(): Finish!!!");
+        return new ArrayList<>(resumeMap.values());
     }
 
     @Override
@@ -91,7 +111,16 @@ public class SqlStorage implements Storage {
                     ps -> {
                         LOG.info("save contacts: Handling request...");
                         sqlHelper.iterateContactsAndBatchExecute(resume, ps);
-                        LOG.info("save: saved contacts [%s]".formatted(resume.getAllContacts()));
+                        LOG.info("save: saved contacts - [%s]".formatted(resume.getAllContacts()));
+                        return null;
+                    });
+
+            sqlHelper.executePreparedStatement(conn,
+                    "INSERT INTO section (resume_uuid, objective) " +
+                            "VALUES (?,?)",
+                    ps -> {
+                        LOG.info("save [%s]: Handling request...".formatted(SectionType.OBJECTIVE));
+                        sqlHelper.saveTextSection(resume, ps, SectionType.OBJECTIVE);
                         return null;
                     });
             LOG.info("save: Finish! Saved resume [%s]".formatted(resume.toString()));
@@ -119,9 +148,14 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.provideConnection(
-                "SELECT * " +
+                "SELECT " +
+                        "     r.*, " +
+                        "     c.type AS contact_type, " +
+                        "     c.value AS contact_value, " +
+                        "     s.objective " +
                         "  FROM resume r " +
                         "  LEFT JOIN contact c ON r.uuid = c.resume_uuid " +
+                        "  LEFT JOIN section s ON r.uuid = s.resume_uuid " +
                         " WHERE r.uuid = ?",
                 ps -> {
                     LOG.info("get: Handling request...");
@@ -134,6 +168,7 @@ public class SqlStorage implements Storage {
                     final Resume resume = new Resume(uuid, rs.getString("full_name"));
                     do {
                         sqlHelper.addContact(rs, resume);
+                        sqlHelper.addTextSection(rs, "objective", resume, SectionType.OBJECTIVE);
                     } while (rs.next());
                     LOG.info("get: Finish! Got resume: " + uuid);
                     return resume;
@@ -142,6 +177,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public void clear() {
+        LOG.info("clear: Handling request...");
         sqlHelper.transactionalExecute(conn -> sqlHelper.executePreparedStatement(conn,
                 "DELETE FROM resume", PreparedStatement::execute));
         LOG.info("clear: Finish! Cleared.");
@@ -184,6 +220,19 @@ public class SqlStorage implements Storage {
                                         sqlHelper.iterateContactsAndBatchExecute(resume, ps1);
                                         LOG.info("inserting contacts: Finish! Inserted contacts [%s]".
                                                 formatted(resume.getAllContacts()));
+                                        return null;
+                                    });
+
+                            sqlHelper.executePreparedStatement(conn,
+                                    "UPDATE section " +
+                                            "   SET objective = ? " +
+                                            " WHERE resume_uuid = ?",
+                                    ps1 -> {
+                                        SectionType objective = SectionType.OBJECTIVE;
+                                        LOG.info("updating [%s]: Handling request...".formatted(objective));
+                                        if (resume.getSection(objective) != null) {
+                                            sqlHelper.updateTextSection(ps1, resume, objective);
+                                        }
                                         return null;
                                     });
                             LOG.info("update: Finish! Updated: " + resume);

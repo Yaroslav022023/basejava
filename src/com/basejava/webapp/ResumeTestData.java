@@ -118,10 +118,10 @@ public class ResumeTestData {
         resume.addContact(ContactType.GITHUB, "profile GitHub");
         resume.addContact(ContactType.STACKOVERFLOW, "profile stackoverflow");
         resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
-//
-//        //OBJECTIVE enum Section
-//        Section objective = new TextSection("text text text text text");
-//        resume.addSection(SectionType.OBJECTIVE, objective);
+
+        //OBJECTIVE enum Section
+        Section objective = new TextSection("text text text text text");
+        resume.addSection(SectionType.OBJECTIVE, objective);
 //
 //        //PERSONAL enum Section
 //        Section personal = new TextSection("text text text text text");

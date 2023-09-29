@@ -1,10 +1,12 @@
 package com.basejava.webapp.storage;
 
-import com.basejava.webapp.util.Config;
 import com.basejava.webapp.ResumeTestData;
 import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.NotExistStorageException;
 import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.model.SectionType;
+import com.basejava.webapp.model.TextSection;
+import com.basejava.webapp.util.Config;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +63,7 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    void getAllSorted2() {
+    void getAllSortedWithoutContactsAndSections() {
         // Creating resume without contacts and sections.
         // r1, r2 - with contacts and sections, r3 - without.
         final String UUID_5 = UUID.randomUUID().toString();
@@ -123,6 +125,17 @@ public abstract class AbstractStorageTest {
         storage.update(r1);
 
         assertThrows(NotExistStorageException.class, () -> storage.update(r4));
+    }
+
+    @Test
+    void updateObjectiveSection() {
+        SectionType objective = SectionType.OBJECTIVE;
+        if (r1.getSection(objective) != null) {
+            String updatedText = "text2, text2, text2, text2";
+            ((TextSection) r1.getSection(objective)).setText(updatedText);
+            storage.update(r1);
+            assertEquals(r1, storage.get(r1.getUuid()));
+        }
     }
 
     @Test
