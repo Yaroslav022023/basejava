@@ -102,6 +102,7 @@ public class ResumeTestData {
             System.out.printf("%s%-10s\n", formatFile, file.getName());
         }
     }
+
     public static Resume createResumeWithoutContactAndSection(String uuid, String fullName) {
         return new Resume(uuid, fullName);
     }
@@ -120,13 +121,13 @@ public class ResumeTestData {
         resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
 
         //OBJECTIVE enum Section
-        Section objective = new TextSection("text text text text text");
+        Section objective = new TextSection("text for OBJECTIVE section");
         resume.addSection(SectionType.OBJECTIVE, objective);
-//
-//        //PERSONAL enum Section
-//        Section personal = new TextSection("text text text text text");
-//        resume.addSection(SectionType.PERSONAL, personal);
-//
+
+        //PERSONAL enum Section
+        Section personal = new TextSection("text for PERSONAL section");
+        resume.addSection(SectionType.PERSONAL, personal);
+
 //        //ACHIEVEMENT enum Section
 //        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
 //        resume.addSection(SectionType.ACHIEVEMENT, achievement);
