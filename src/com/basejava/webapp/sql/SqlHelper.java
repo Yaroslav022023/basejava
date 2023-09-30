@@ -97,16 +97,17 @@ public class SqlHelper {
         SectionType personal = SectionType.PERSONAL;
         try {
             ps.setString(1, resume.getUuid());
-            LOG.info("saveTextSection(): OBJECTIVE...");
+            LOG.info("saveSection(): OBJECTIVE...");
             ps.setString(2, resume.getSection(objective) != null ?
                     resume.getSection(objective).toString() : null);
-            LOG.info("saveTextSection(): PERSONAL...");
+            LOG.info("saveSection(): PERSONAL...");
             ps.setString(3, resume.getSection(personal) != null ?
                     resume.getSection(personal).toString() : null);
             ps.executeUpdate();
-            LOG.info("saveTextSection(): Finish! For resume_uuid: [%s]".formatted(resume.getUuid()));
+            LOG.info("saveSection(): Finish! For resume_uuid: [%s]".formatted(resume.getUuid()));
         } catch (SQLException e) {
-            LOG.log(Level.WARNING, "Occurred SqlException", e);
+            LOG.log(Level.WARNING, ("SQLException occurred while trying to save " +
+                    "sections in the table 'section'"), e);
             throw new StorageException(e);
         }
     }
@@ -116,15 +117,15 @@ public class SqlHelper {
         for (SectionType sectionType : sectionTypes) {
             if (resume.getSection(sectionType) == null) {
                 try {
-                    LOG.info("addTextSectionToResume(): [%s]...".formatted(sectionType));
+                    LOG.info("addSectionToResume(): [%s]...".formatted(sectionType));
                     String text = rs.getString(sectionType.name().toLowerCase());
                     if (text != null) {
                         resume.addSection(sectionType, new TextSection(text));
-                        LOG.info("addTextSectionToResume() [%s]: Finish!".formatted(sectionType));
+                        LOG.info("addSectionToResume() [%s]: Finish!".formatted(sectionType));
                     }
                 } catch (SQLException e) {
                     LOG.log(Level.WARNING, ("SQLException occurred while trying to get " +
-                            "columns 'objective' or 'personal' from the table 'section'"), e);
+                            "sections from the table 'section'"), e);
                     throw new StorageException(e);
                 }
             }
@@ -145,10 +146,10 @@ public class SqlHelper {
             ps.executeUpdate();
         } catch (SQLException e) {
             LOG.log(Level.WARNING, ("SQLException occurred while trying to update " +
-                    "columns 'objective' or 'personal' in the table 'section'"), e);
+                    "sections in the table 'section'"), e);
             throw new StorageException(e);
         }
-        LOG.info(("updateTextSection(): Finish! For resume_uuid: [%s]").formatted(resume.getUuid()));
+        LOG.info(("updateSection(): Finish! For resume_uuid: [%s]").formatted(resume.getUuid()));
     }
 
     public void handleQueryResultRows(ResultSet rs, Map<String, Resume> resumeMap, RunnableWithSqlException executor) {
