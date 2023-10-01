@@ -32,11 +32,11 @@ public class Config {
         return INSTANCE;
     }
 
-    public Storage getStorage() {
+    public final Storage getStorage() {
         return storage;
     }
 
-    public File getStorageDir() {
+    public final File getStorageDir() {
         return storageDir;
     }
 }
