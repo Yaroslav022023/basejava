@@ -128,13 +128,13 @@ public class ResumeTestData {
         Section personal = new TextSection("text for PERSONAL section");
         resume.addSection(SectionType.PERSONAL, personal);
 
-//        //ACHIEVEMENT enum Section
-//        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
-//        resume.addSection(SectionType.ACHIEVEMENT, achievement);
-//
-//        //QUALIFICATION enum Section
-//        Section qualification = new ListSection("text 10", "text 20", "text 30");
-//        resume.addSection(SectionType.QUALIFICATION, qualification);
+        //ACHIEVEMENT enum Section
+        ListSection achievement = new ListSection("text 1", "text 2", "text 3");
+        resume.addSection(SectionType.ACHIEVEMENT, achievement);
+
+        //QUALIFICATION enum Section
+        Section qualification = new ListSection("text 10", "text 20", "text 30");
+        resume.addSection(SectionType.QUALIFICATION, qualification);
 //
 //        //EXPERIENCE enum Section
 //        String nameCompany = "Air";

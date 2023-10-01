@@ -45,10 +45,7 @@ public class SqlStorage implements Storage {
                 });
 
         sqlHelper.provideConnection(
-                "SELECT " +
-                        "     c.type AS contact_type, " +
-                        "     c.value AS contact_value, " +
-                        "     c.resume_uuid " +
+                "SELECT * " +
                         "  FROM contact c ",
                 ps -> {
                     LOG.info("SELECT table 'contact': Handling request...");
@@ -60,11 +57,8 @@ public class SqlStorage implements Storage {
                 });
 
         sqlHelper.provideConnection(
-                "SELECT " +
-                        "     o.objective, " +
-                        "     o.personal, " +
-                        "     o.resume_uuid " +
-                        "  FROM section o ",
+                "SELECT * " +
+                        "  FROM section s ",
                 ps -> {
                     LOG.info("SELECT table 'section': Handling request...");
                     final ResultSet rs = ps.executeQuery();
@@ -117,11 +111,11 @@ public class SqlStorage implements Storage {
                     });
 
             sqlHelper.executePreparedStatement(conn,
-                    "INSERT INTO section (resume_uuid, objective, personal) " +
-                            " VALUES (?,?,?)",
+                    "INSERT INTO section (objective, personal, achievement, qualification, resume_uuid) " +
+                            " VALUES (?,?,?,?,?)",
                     ps -> {
                         LOG.info("save TextSection: Handling request...");
-                        sqlHelper.saveSection(resume, ps);
+                        sqlHelper.updateSection(ps, resume, "save");
                         return null;
                     });
             LOG.info("save: Finish! Saved resume [%s]".formatted(resume.toString()));
@@ -151,10 +145,8 @@ public class SqlStorage implements Storage {
         return sqlHelper.provideConnection(
                 "SELECT " +
                         "     r.*, " +
-                        "     c.type AS contact_type, " +
-                        "     c.value AS contact_value, " +
-                        "     s.objective, " +
-                        "     s.personal " +
+                        "     c.*, " +
+                        "     s.* " +
                         "  FROM resume r " +
                         "  LEFT JOIN contact c ON r.uuid = c.resume_uuid " +
                         "  LEFT JOIN section s ON r.uuid = s.resume_uuid " +
@@ -228,12 +220,14 @@ public class SqlStorage implements Storage {
                             sqlHelper.executePreparedStatement(conn,
                                     "UPDATE section " +
                                             "   SET objective = ?, " +
-                                            "       personal = ? " +
+                                            "       personal = ?, " +
+                                            "       achievement = ?, " +
+                                            "       qualification = ? " +
                                             " WHERE resume_uuid = ?",
                                     ps1 -> {
-                                        LOG.info("updating TextSection: Handling request...");
-                                        sqlHelper.updateSection(ps1, resume);
-                                        LOG.info("updating TextSection: Finish!");
+                                        LOG.info("updating sections: Handling request...");
+                                        sqlHelper.updateSection(ps1, resume, "update");
+                                        LOG.info("updating sections: Finish!");
                                         return null;
                                     });
                             LOG.info("update: Finish! Updated: " + resume);

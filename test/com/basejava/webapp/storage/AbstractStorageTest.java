@@ -3,6 +3,7 @@ package com.basejava.webapp.storage;
 import com.basejava.webapp.ResumeTestData;
 import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.NotExistStorageException;
+import com.basejava.webapp.model.ListSection;
 import com.basejava.webapp.model.Resume;
 import com.basejava.webapp.model.SectionType;
 import com.basejava.webapp.model.TextSection;
@@ -131,8 +132,43 @@ public abstract class AbstractStorageTest {
     void updateObjectiveSection() {
         SectionType objective = SectionType.OBJECTIVE;
         if (r1.getSection(objective) != null) {
-            String updatedText = "text2, text2, text2, text2";
+            String updatedText = "text2 for OBJECTIVE, text2, text2, text2";
             ((TextSection) r1.getSection(objective)).setText(updatedText);
+            storage.update(r1);
+            assertEquals(r1, storage.get(r1.getUuid()));
+        }
+    }
+
+    @Test
+    void updatePersonalSection() {
+        SectionType personal = SectionType.PERSONAL;
+        if (r1.getSection(personal) != null) {
+            String updatedText = "text2 for PERSONAL, text2, text2, text2";
+            ((TextSection) r1.getSection(personal)).setText(updatedText);
+            storage.update(r1);
+            assertEquals(r1, storage.get(r1.getUuid()));
+        }
+    }
+
+    @Test
+    void updateAchievementSection() {
+        SectionType achievement = SectionType.ACHIEVEMENT;
+        if (r1.getSection(achievement) != null) {
+            String updatedText = "text2 for ACHIEVEMENT, text2";
+            ((ListSection) r1.getSection(achievement)).clear();
+            ((ListSection) r1.getSection(achievement)).addText(updatedText);
+            storage.update(r1);
+            assertEquals(r1, storage.get(r1.getUuid()));
+        }
+    }
+
+    @Test
+    void updateQualificationSection() {
+        SectionType qualification = SectionType.QUALIFICATION;
+        if (r1.getSection(qualification) != null) {
+            String updatedText = "text2 for QUALIFICATION, text2";
+            ((ListSection) r1.getSection(qualification)).clear();
+            ((ListSection) r1.getSection(qualification)).addText(updatedText);
             storage.update(r1);
             assertEquals(r1, storage.get(r1.getUuid()));
         }

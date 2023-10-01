@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class PathStorage extends AbstractStorage<Path>{
+public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
     private StreamSerializerStrategy strategy;
 
@@ -44,7 +44,7 @@ public class PathStorage extends AbstractStorage<Path>{
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
-        try (Stream<Path> paths = getPaths("doCopyAll error.")){
+        try (Stream<Path> paths = getPaths("doCopyAll error.")) {
             paths.forEach(path -> resumes.add(doGet(path)));
         }
         return resumes;
@@ -89,7 +89,8 @@ public class PathStorage extends AbstractStorage<Path>{
     @Override
     protected void doUpdate(Path path, Resume resume) {
         try {
-            strategy.doWrite(resume, Channels.newOutputStream(FileChannel.open(path, StandardOpenOption.WRITE)));
+            strategy.doWrite(resume, Channels.newOutputStream(FileChannel.open(path,
+                    StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)));
         } catch (IOException e) {
             throw new StorageException("Path update error.", path.getFileName().toString(), e);
         }

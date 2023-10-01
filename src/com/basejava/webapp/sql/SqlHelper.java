@@ -20,7 +20,7 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T provideConnection(String sqlQuery, PreparedStatementExecutor<T> executor) {
+    public final <T> T provideConnection(String sqlQuery, PreparedStatementExecutor<T> executor) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
             return executor.execute(ps);
@@ -30,7 +30,7 @@ public class SqlHelper {
         }
     }
 
-    public <T> T transactionalExecute(ConnectionExecutor<T> executor) {
+    public final <T> T transactionalExecute(ConnectionExecutor<T> executor) {
         try (Connection conn = connectionFactory.getConnection()) {
             try {
                 conn.setAutoCommit(false);
@@ -49,7 +49,8 @@ public class SqlHelper {
         }
     }
 
-    public <T> T executePreparedStatement(Connection conn, String sqlQuery, PreparedStatementExecutor<T> executor) {
+    public final <T> T executePreparedStatement(Connection conn, String sqlQuery,
+                                                PreparedStatementExecutor<T> executor) {
         try (PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
             LOG.info("Got a connection to the database.");
             return executor.execute(ps);
@@ -59,7 +60,7 @@ public class SqlHelper {
         }
     }
 
-    public void iterateContactsAndBatchExecute(Resume resume, PreparedStatement ps) {
+    public final void iterateContactsAndBatchExecute(Resume resume, PreparedStatement ps) {
         try {
             LOG.info("iterateContactsAndBatchExecute()...");
             for (Map.Entry<ContactType, String> entry : resume.getAllContacts().entrySet()) {
@@ -77,12 +78,12 @@ public class SqlHelper {
         }
     }
 
-    public void addContact(ResultSet rs, Resume resume) {
+    public final void addContact(ResultSet rs, Resume resume) {
         try {
             LOG.info("addContact()...");
-            String value = rs.getString("contact_value");
+            String value = rs.getString("value");
             if (value != null) {
-                resume.addContact(ContactType.valueOf(rs.getString("contact_type")), value);
+                resume.addContact(ContactType.valueOf(rs.getString("type")), value);
                 LOG.info("addContact(): Finish! - [%s]".formatted(value));
             }
         } catch (SQLException e) {
@@ -92,36 +93,40 @@ public class SqlHelper {
         }
     }
 
-    public void saveSection(Resume resume, PreparedStatement ps) {
-        SectionType objective = SectionType.OBJECTIVE;
-        SectionType personal = SectionType.PERSONAL;
+    public final void updateSection(PreparedStatement ps, Resume resume, String action) {
         try {
-            ps.setString(1, resume.getUuid());
-            LOG.info("saveSection(): OBJECTIVE...");
-            ps.setString(2, resume.getSection(objective) != null ?
-                    resume.getSection(objective).toString() : null);
-            LOG.info("saveSection(): PERSONAL...");
-            ps.setString(3, resume.getSection(personal) != null ?
-                    resume.getSection(personal).toString() : null);
+            setStringForPreparedStatement(ps, 1, resume, SectionType.OBJECTIVE);
+            setStringForPreparedStatement(ps, 2, resume, SectionType.PERSONAL);
+            setStringForPreparedStatement(ps, 3, resume, SectionType.ACHIEVEMENT);
+            setStringForPreparedStatement(ps, 4, resume, SectionType.QUALIFICATION);
+            ps.setString(5, resume.getUuid());
             ps.executeUpdate();
-            LOG.info("saveSection(): Finish! For resume_uuid: [%s]".formatted(resume.getUuid()));
         } catch (SQLException e) {
-            LOG.log(Level.WARNING, ("SQLException occurred while trying to save " +
+            LOG.log(Level.WARNING, ("SQLException occurred while trying to [%s] ".formatted(action) +
                     "sections in the table 'section'"), e);
             throw new StorageException(e);
         }
+        LOG.info(("updateSection(): Finish! For resume_uuid: [%s]").formatted(resume.getUuid()));
     }
 
-    public void addSectionToResume(ResultSet rs, Resume resume) {
-        SectionType[] sectionTypes = new SectionType[]{SectionType.OBJECTIVE, SectionType.PERSONAL};
+    public final void addSectionToResume(ResultSet rs, Resume resume) {
+        SectionType[] sectionTypes = SectionType.values();
         for (SectionType sectionType : sectionTypes) {
             if (resume.getSection(sectionType) == null) {
                 try {
                     LOG.info("addSectionToResume(): [%s]...".formatted(sectionType));
                     String text = rs.getString(sectionType.name().toLowerCase());
                     if (text != null) {
-                        resume.addSection(sectionType, new TextSection(text));
-                        LOG.info("addSectionToResume() [%s]: Finish!".formatted(sectionType));
+                        switch (sectionType) {
+                            case OBJECTIVE, PERSONAL -> {
+                                resume.addSection(sectionType, new TextSection(text));
+                                LOG.info("addSectionToResume() [%s]: Finish!".formatted(sectionType));
+                            }
+                            case ACHIEVEMENT, QUALIFICATION -> {
+                                resume.addSection(sectionType, new ListSection(text.split("\n")));
+                                LOG.info("addSectionToResume() [%s]: Finish!".formatted(sectionType));
+                            }
+                        }
                     }
                 } catch (SQLException e) {
                     LOG.log(Level.WARNING, ("SQLException occurred while trying to get " +
@@ -132,27 +137,8 @@ public class SqlHelper {
         }
     }
 
-    public void updateSection(PreparedStatement ps, Resume resume) {
-        SectionType objective = SectionType.OBJECTIVE;
-        SectionType personal = SectionType.PERSONAL;
-        try {
-            LOG.info("updating [%s]...".formatted(objective));
-            ps.setString(1, resume.getSection(objective) != null ?
-                    resume.getSection(objective).toString() : null);
-            LOG.info("updating [%s]...".formatted(personal));
-            ps.setString(2, resume.getSection(personal) != null ?
-                    resume.getSection(personal).toString() : null);
-            ps.setString(3, resume.getUuid());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOG.log(Level.WARNING, ("SQLException occurred while trying to update " +
-                    "sections in the table 'section'"), e);
-            throw new StorageException(e);
-        }
-        LOG.info(("updateSection(): Finish! For resume_uuid: [%s]").formatted(resume.getUuid()));
-    }
-
-    public void handleQueryResultRows(ResultSet rs, Map<String, Resume> resumeMap, RunnableWithSqlException executor) {
+    public final void handleQueryResultRows(ResultSet rs, Map<String,
+            Resume> resumeMap, RunnableWithSqlException executor) {
         try {
             while (rs.next()) {
                 Resume resume = resumeMap.get(rs.getString("resume_uuid"));
@@ -172,5 +158,21 @@ public class SqlHelper {
             throw new ExistStorageException(null);
         }
         LOG.log(Level.WARNING, "Occurred SqlException", e);
+    }
+
+    private void setStringForPreparedStatement(PreparedStatement ps, int queue,
+                                               Resume resume, SectionType sectionType) {
+        try {
+            LOG.info("saveSection(): [%s]...".formatted(sectionType));
+            switch (sectionType) {
+                case OBJECTIVE, PERSONAL -> ps.setString(queue, resume.getSection(sectionType) != null ?
+                        resume.getSection(sectionType).toString() : null);
+                case ACHIEVEMENT, QUALIFICATION -> ps.setString(queue, resume.getSection(sectionType) != null ?
+                        String.join("\n", ((ListSection) resume.getSection(sectionType)).getTexts()) : null);
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.WARNING, ("SQLException occurred while trying to setString() in PreparedStatement"), e);
+            throw new StorageException(e);
+        }
     }
 }
