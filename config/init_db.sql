@@ -12,12 +12,14 @@ CREATE TABLE contact
     value       TEXT     NOT NULL
 );
 
-CREATE TABLE objective
+CREATE TABLE section
 (
-    id          SERIAL PRIMARY KEY,
-    resume_uuid CHAR(36) NOT NULL,
-    value       TEXT        NOT NULL,
-    FOREIGN KEY (resume_uuid) REFERENCES resume (uuid)
+    id_section    SERIAL PRIMARY KEY,
+    resume_uuid   CHAR(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
+    objective     TEXT,
+    personal      TEXT,
+    achievement   TEXT,
+    qualification TEXT
 );
 
 CREATE UNIQUE INDEX contact_uuid_type_index
