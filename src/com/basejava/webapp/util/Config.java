@@ -15,7 +15,7 @@ public class Config {
     private final File storageDir;
 
     private Config() {
-        File PROPS = new File("config/resumes.properties");
+        File PROPS = new File("/Users/jaroslavyar/javaops/basejava/config/resumes.properties");
         try (InputStream is = new FileInputStream(PROPS)) {
             Properties props = new Properties();
             props.load(is);

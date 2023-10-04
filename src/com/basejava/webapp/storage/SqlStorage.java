@@ -45,19 +45,25 @@ public class SqlStorage implements Storage {
                 });
 
         sqlHelper.provideConnection(
-                "SELECT * " +
+                "SELECT " +
+                        "     c.resume_uuid, " +
+                        "     c.type AS contact_type, " +
+                        "     c.value AS contact_value " +
                         "  FROM contact c ",
                 ps -> {
                     LOG.info("SELECT table 'contact': Handling request...");
                     final ResultSet rs = ps.executeQuery();
                     sqlHelper.handleQueryResultRows(rs, resumeMap,
-                            resume -> sqlHelper.addContact(rs, resume));
+                            resume -> sqlHelper.addContactToResume(rs, resume));
                     LOG.info("SELECT table 'contact': Finish!");
                     return null;
                 });
 
         sqlHelper.provideConnection(
-                "SELECT * " +
+                "SELECT " +
+                        "     s.resume_uuid, " +
+                        "     s.type AS section_type, " +
+                        "     s.value AS section_value " +
                         "  FROM section s ",
                 ps -> {
                     LOG.info("SELECT table 'section': Handling request...");
@@ -106,16 +112,17 @@ public class SqlStorage implements Storage {
                     ps -> {
                         LOG.info("save contacts: Handling request...");
                         sqlHelper.iterateContactsAndBatchExecute(resume, ps);
-                        LOG.info("save: saved contacts - [%s]".formatted(resume.getAllContacts()));
+                        LOG.info("save: saved contacts for resume: [%s]".formatted(resume.getAllContacts()));
                         return null;
                     });
 
             sqlHelper.executePreparedStatement(conn,
-                    "INSERT INTO section (objective, personal, achievement, qualification, resume_uuid) " +
-                            " VALUES (?,?,?,?,?)",
+                    "INSERT INTO section (type, value, resume_uuid) " +
+                            " VALUES (?,?,?)",
                     ps -> {
-                        LOG.info("save TextSection: Handling request...");
-                        sqlHelper.updateSection(ps, resume, "save");
+                        LOG.info("save sections: Handling request...");
+                        sqlHelper.iterateSectionsAndBatchExecute(resume, ps);
+                        LOG.info("save: saved sections for resume: [%s]".formatted(resume.getAllSections()));
                         return null;
                     });
             LOG.info("save: Finish! Saved resume [%s]".formatted(resume.toString()));
@@ -145,8 +152,10 @@ public class SqlStorage implements Storage {
         return sqlHelper.provideConnection(
                 "SELECT " +
                         "     r.*, " +
-                        "     c.*, " +
-                        "     s.* " +
+                        "     c.type AS contact_type, " +
+                        "     c.value AS contact_value, " +
+                        "     s.type AS section_type, " +
+                        "     s.value AS section_value " +
                         "  FROM resume r " +
                         "  LEFT JOIN contact c ON r.uuid = c.resume_uuid " +
                         "  LEFT JOIN section s ON r.uuid = s.resume_uuid " +
@@ -161,7 +170,7 @@ public class SqlStorage implements Storage {
                     }
                     final Resume resume = new Resume(uuid, rs.getString("full_name"));
                     do {
-                        sqlHelper.addContact(rs, resume);
+                        sqlHelper.addContactToResume(rs, resume);
                         sqlHelper.addSectionToResume(rs, resume);
                     } while (rs.next());
                     LOG.info("get: Finish! Got resume: " + uuid);
@@ -218,16 +227,24 @@ public class SqlStorage implements Storage {
                                     });
 
                             sqlHelper.executePreparedStatement(conn,
-                                    "UPDATE section " +
-                                            "   SET objective = ?, " +
-                                            "       personal = ?, " +
-                                            "       achievement = ?, " +
-                                            "       qualification = ? " +
+                                    "DELETE FROM section " +
                                             " WHERE resume_uuid = ?",
                                     ps1 -> {
-                                        LOG.info("updating sections: Handling request...");
-                                        sqlHelper.updateSection(ps1, resume, "update");
-                                        LOG.info("updating sections: Finish!");
+                                        LOG.info("deleting sections: Handling request...");
+                                        ps1.setString(1, resume.getUuid());
+                                        ps1.executeUpdate();
+                                        LOG.info(("deleting sections: Finish! Deleted sections" +
+                                                " for resume_uuid [%s]").formatted(resume.getUuid()));
+                                        return null;
+                                    });
+
+                            sqlHelper.executePreparedStatement(conn,
+                                    "INSERT INTO section (type, value, resume_uuid)" +
+                                            "VALUES (?, ?, ?)",
+                                    ps1 -> {
+                                        LOG.info("inserting sections: Handling request...");
+                                        sqlHelper.iterateSectionsAndBatchExecute(resume, ps1);
+                                        LOG.info("inserting sections: Finish!");
                                         return null;
                                     });
                             LOG.info("update: Finish! Updated: " + resume);
