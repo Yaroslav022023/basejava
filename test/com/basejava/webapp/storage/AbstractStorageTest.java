@@ -8,7 +8,6 @@ import com.basejava.webapp.model.Resume;
 import com.basejava.webapp.model.SectionType;
 import com.basejava.webapp.model.TextSection;
 import com.basejava.webapp.util.Config;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,14 +41,11 @@ public abstract class AbstractStorageTest {
 
     @BeforeEach
     void setUp() {
+        storage.clear();
+
         storage.save(r1);
         storage.save(r2);
         storage.save(r3);
-    }
-
-    @AfterEach
-    void afterEach() {
-        storage.clear();
     }
 
     @Test

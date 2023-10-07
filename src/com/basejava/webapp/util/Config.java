@@ -15,7 +15,7 @@ public class Config {
     private final File storageDir;
 
     private Config() {
-        File PROPS = new File("/Users/jaroslavyar/javaops/basejava/config/resumes.properties");
+        File PROPS = new File(getHomeDir() + "/config/resumes.properties");
         try (InputStream is = new FileInputStream(PROPS)) {
             Properties props = new Properties();
             props.load(is);
@@ -38,5 +38,14 @@ public class Config {
 
     public final File getStorageDir() {
         return storageDir;
+    }
+
+    private static File getHomeDir() {
+        String prop = System.getProperty("homeDir");
+        File homeDir = new File(prop == null ? "." : prop);
+        if (!homeDir.isDirectory()) {
+            throw new IllegalStateException(homeDir + " is not directory");
+        }
+        return homeDir;
     }
 }

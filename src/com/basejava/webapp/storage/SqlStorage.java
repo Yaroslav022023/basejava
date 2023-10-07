@@ -112,7 +112,7 @@ public class SqlStorage implements Storage {
                     ps -> {
                         LOG.info("save contacts: Handling request...");
                         sqlHelper.iterateContactsAndBatchExecute(resume, ps);
-                        LOG.info("save: saved contacts for resume: [%s]".formatted(resume.getAllContacts()));
+                        LOG.info("save: saved contacts for resume: [%s]".formatted(resume.getContacts()));
                         return null;
                     });
 
@@ -122,7 +122,7 @@ public class SqlStorage implements Storage {
                     ps -> {
                         LOG.info("save sections: Handling request...");
                         sqlHelper.iterateSectionsAndBatchExecute(resume, ps);
-                        LOG.info("save: saved sections for resume: [%s]".formatted(resume.getAllSections()));
+                        LOG.info("save: saved sections for resume: [%s]".formatted(resume.getSections()));
                         return null;
                     });
             LOG.info("save: Finish! Saved resume [%s]".formatted(resume.toString()));
@@ -222,7 +222,7 @@ public class SqlStorage implements Storage {
                                         LOG.info("inserting contacts: Handling request...");
                                         sqlHelper.iterateContactsAndBatchExecute(resume, ps1);
                                         LOG.info("inserting contacts: Finish! Inserted contacts [%s]".
-                                                formatted(resume.getAllContacts()));
+                                                formatted(resume.getContacts()));
                                         return null;
                                     });
 

@@ -30,7 +30,7 @@ public class ResumeTest extends AbstractResumeTest{
         expected.put(ContactType.STACKOVERFLOW, "profile stackoverflow");
         expected.put(ContactType.URL_HOMEPAGE, "http://abc.ru");
 
-        assertEquals(expected, resume.getAllContacts());
+        assertEquals(expected, resume.getContacts());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class ResumeTest extends AbstractResumeTest{
         expected.put(SectionType.EDUCATION, new CompanySection(nameCompany,
                 webSite, title, startDate, endDate));
 
-        assertEquals(expected, resume.getAllSections());
+        assertEquals(expected, resume.getSections());
     }
 
     @Test
@@ -110,12 +110,12 @@ public class ResumeTest extends AbstractResumeTest{
     @Test
     void clearContacts() {
         resume.clearContacts();
-        assertEquals(0, resume.getAllContacts().size());
+        assertEquals(0, resume.getContacts().size());
     }
 
     @Test
     void clearSections() {
         resume.clearSections();
-        assertEquals(0, resume.getAllSections().size());
+        assertEquals(0, resume.getSections().size());
     }
 }

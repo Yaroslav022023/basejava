@@ -18,12 +18,12 @@ public class DataStreamSerializer implements StreamSerializerStrategy {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
 
-            writeWithException(resume.getAllContacts().entrySet(), dos, (contactEntry) -> {
+            writeWithException(resume.getContacts().entrySet(), dos, (contactEntry) -> {
                 dos.writeUTF(contactEntry.getKey().name());
                 dos.writeUTF(contactEntry.getValue());
             });
 
-            writeWithException(resume.getAllSections().entrySet(), dos, (sectionEntry) -> {
+            writeWithException(resume.getSections().entrySet(), dos, (sectionEntry) -> {
                 dos.writeUTF(sectionEntry.getKey().name());
                 Section sectionValue = sectionEntry.getValue();
 

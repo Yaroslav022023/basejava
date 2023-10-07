@@ -63,7 +63,7 @@ public class SqlHelper {
         LOG.info("iterateContactsAndBatchExecute()...");
         handlePreparedStatement(ps, "CONTACTS",
                 () -> {
-                    for (Map.Entry<ContactType, String> entry : resume.getAllContacts().entrySet()) {
+                    for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
                         ps.setString(1, resume.getUuid());
                         ps.setString(2, entry.getKey().name());
                         ps.setString(3, entry.getValue());
@@ -77,7 +77,7 @@ public class SqlHelper {
         LOG.info("iterateSectionsAndBatchExecute()...");
         handlePreparedStatement(ps, "SECTIONS",
                 () -> {
-                    for (Map.Entry<SectionType, Section> entry : resume.getAllSections().entrySet()) {
+                    for (Map.Entry<SectionType, Section> entry : resume.getSections().entrySet()) {
                         SectionType sectionType = entry.getKey();
                         switch (sectionType) {
                             case OBJECTIVE, PERSONAL -> {

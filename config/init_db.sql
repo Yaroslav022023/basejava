@@ -12,6 +12,10 @@ CREATE TABLE contact
     value       TEXT     NOT NULL
 );
 
+CREATE UNIQUE INDEX contact_uuid_type_index
+    ON contact USING btree
+    (resume_uuid ASC NULLS LAST, type ASC NULLS LAST);
+
 CREATE TABLE section
 (
     id_section  SERIAL PRIMARY KEY,
@@ -20,6 +24,6 @@ CREATE TABLE section
     value       TEXT
 );
 
-CREATE UNIQUE INDEX contact_uuid_type_index
-    ON contact USING btree
+CREATE UNIQUE INDEX section_uuid_type_index
+    ON section USING btree
     (resume_uuid ASC NULLS LAST, type ASC NULLS LAST);
