@@ -162,9 +162,13 @@ public abstract class AbstractStorageTest {
     void updateQualificationSection() {
         SectionType qualification = SectionType.QUALIFICATION;
         if (r1.getSection(qualification) != null) {
-            String updatedText = "text2 for QUALIFICATION, text2";
+            String updatedText = "text 100";
+            String updatedText2 = "text 200";
+            String updatedText3 = "text 300";
             ((ListSection) r1.getSection(qualification)).clear();
             ((ListSection) r1.getSection(qualification)).addText(updatedText);
+            ((ListSection) r1.getSection(qualification)).addText(updatedText2);
+            ((ListSection) r1.getSection(qualification)).addText(updatedText3);
             storage.update(r1);
             assertEquals(r1, storage.get(r1.getUuid()));
         }

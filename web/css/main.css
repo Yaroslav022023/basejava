@@ -1,6 +1,27 @@
-section {
-    width: 900px;
-    margin: auto;
+.content-section {
+    text-align: center;
+}
+
+.button-and-table-container {
+    display: inline-block;
+    text-align: right;
+}
+
+.create-resume {
+    display: inline-block;
+    height: 50px;
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+}
+
+.resume-table {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 header {
@@ -19,6 +40,7 @@ footer {
     margin: 20px 0;
     text-align: center;
 }
+
 
 dl {
     background: none repeat scroll 0 0 #FAFAFA;

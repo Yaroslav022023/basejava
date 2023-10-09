@@ -15,7 +15,9 @@ public class ListSection extends Section{
 
     public ListSection(String... texts) {
         Objects.requireNonNull(texts, "text must be not null");
-        this.texts = new ArrayList<>(Arrays.asList(texts));
+        final List<String> edited = new ArrayList<>(Arrays.asList(texts));
+        edited.removeIf(string -> string.trim().isEmpty());
+        this.texts = edited;
     }
 
     public ListSection(List<String> texts) {
@@ -53,6 +55,6 @@ public class ListSection extends Section{
 
     @Override
     public String toString() {
-        return texts.toString();
+        return String.join("\n", texts);
     }
 }

@@ -1,32 +1,32 @@
 package com.basejava.webapp.model;
 
 public enum ContactType {
-    PHONE("Tel.: "),
-    SKYPE("Skype: ") {
+    PHONE("Tel."),
+    SKYPE("Skype") {
         @Override
         public String toHtml0(String value) {
             return getContact() + ": " + toLink("skype:" + value, value);
         }
     },
-    EMAIL("Email: ") {
+    EMAIL("Email") {
         @Override
         public String toHtml0(String value) {
             return getContact() + ": " + toLink("mailto:" + value, value);
         }
     },
-    LINKEDIN("Profile LinkedIn: ") {
+    LINKEDIN("Profile LinkedIn") {
         @Override
         public String toHtml0(String value) {
             return toLink(value);
         }
     },
-    GITHUB("Profile GitHub: ") {
+    GITHUB("Profile GitHub") {
         @Override
         public String toHtml0(String value) {
             return toLink(value);
         }
     },
-    STACKOVERFLOW("Profile Stackoverflow: ") {
+    STACKOVERFLOW("Profile Stackoverflow") {
         @Override
         public String toHtml0(String value) {
             return toLink(value);
@@ -62,6 +62,6 @@ public enum ContactType {
     }
 
     public static String toLink(String href, String title) {
-        return "<a href='" + href + "'>" + title + "</a>";
+        return "<a href='" + href + "' target='_blank'>" + title + "</a>";
     }
 }

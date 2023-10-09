@@ -115,7 +115,7 @@ public class ResumeTestData {
         resume.addContact(ContactType.PHONE, "+1234567890");
         resume.addContact(ContactType.SKYPE, "live:abc@gmail.com");
         resume.addContact(ContactType.EMAIL, "abc@gmail.com");
-        resume.addContact(ContactType.LINKEDIN, "profile LINKEDIN");
+        resume.addContact(ContactType.LINKEDIN, "https://www.linkedin.com");
         resume.addContact(ContactType.GITHUB, "profile GitHub");
         resume.addContact(ContactType.STACKOVERFLOW, "profile stackoverflow");
         resume.addContact(ContactType.URL_HOMEPAGE, "http://abc.ru");
