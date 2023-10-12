@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 
 public class JsonParser {
@@ -20,5 +21,13 @@ public class JsonParser {
 
     public static <T> void write(T object, Writer writer) {
         GSON.toJson(object, writer);
+    }
+
+    public static <T> T read(String content, Type type) {
+        return GSON.fromJson(content, type);
+    }
+
+    public static <T> String write(T object) {
+        return GSON.toJson(object);
     }
 }

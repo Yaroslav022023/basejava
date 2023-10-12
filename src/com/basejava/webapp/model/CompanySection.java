@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CompanySection extends Section{
+public class CompanySection extends Section {
     @Serial
     private static final long serialVersionUID = 1L;
     private final List<Company> companies = new ArrayList<>();
 
-    public CompanySection() {}
+    public CompanySection() {
+    }
 
     public CompanySection(String nameCompany, String webSite, String tittle, LocalDate startDate,
                           LocalDate endDate, String description) {
@@ -34,6 +35,10 @@ public class CompanySection extends Section{
 
         Company company = new Company(nameCompany, webSite, tittle, startDate, endDate);
         companies.add(company);
+    }
+
+    public CompanySection(List<Company> companies) {
+        this.companies.addAll(companies);
     }
 
     public final List<Company> getCompanies() {

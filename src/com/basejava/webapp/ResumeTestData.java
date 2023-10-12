@@ -135,20 +135,20 @@ public class ResumeTestData {
         //QUALIFICATION enum Section
         Section qualification = new ListSection("text 10", "text 20", "text 30");
         resume.addSection(SectionType.QUALIFICATION, qualification);
-//
-//        //EXPERIENCE enum Section
-//        String nameCompany = "Air";
-//        String webSite = "http://air.com";
-//        String title = "some title of experience";
-//        LocalDate startDate = LocalDate.parse("2023-02-20");
-//        LocalDate endDate = LocalDate.parse("2023-02-21");
-//        String description = "Some text of description";
-//        CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
-//        resume.addSection(SectionType.EXPERIENCE, experience);
-//
-//        //EDUCATION enum Section
-//        CompanySection education = new CompanySection(nameCompany, webSite, title, startDate, endDate);
-//        resume.addSection(SectionType.EDUCATION, education);
+
+        //EXPERIENCE enum Section
+        String nameCompany = "Air";
+        String webSite = "http://air.com";
+        String title = "some title of experience";
+        LocalDate startDate = LocalDate.parse("2023-02-20");
+        LocalDate endDate = LocalDate.parse("2023-02-21");
+        String description = "Some text of description";
+        CompanySection experience = new CompanySection(nameCompany, webSite, title, startDate, endDate, description);
+        resume.addSection(SectionType.EXPERIENCE, experience);
+
+        //EDUCATION enum Section
+        CompanySection education = new CompanySection(nameCompany, webSite, title, startDate, endDate);
+        resume.addSection(SectionType.EDUCATION, education);
 
         return resume;
     }

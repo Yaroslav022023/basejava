@@ -3,11 +3,15 @@ package com.basejava.webapp.sql;
 import com.basejava.webapp.exceptions.ExistStorageException;
 import com.basejava.webapp.exceptions.StorageException;
 import com.basejava.webapp.model.*;
+import com.basejava.webapp.util.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +42,8 @@ public class SqlHelper {
                 conn.commit();
                 LOG.info("Completed: conn.commit())");
             } catch (SQLException e) {
-                LOG.log(Level.WARNING, "The transaction has been canceled. Invoking 'conn.rollback()'", e);
+                LOG.log(Level.WARNING, "The transaction has been canceled. " +
+                        "Invoking 'conn.rollback()'", e);
                 conn.rollback();
                 throw e;
             }
@@ -79,17 +84,14 @@ public class SqlHelper {
                 () -> {
                     for (Map.Entry<SectionType, Section> entry : resume.getSections().entrySet()) {
                         SectionType sectionType = entry.getKey();
+                        ps.setString(1, sectionType.name());
                         switch (sectionType) {
-                            case OBJECTIVE, PERSONAL -> {
-                                ps.setString(1, sectionType.name());
-                                ps.setString(2,
-                                        ((TextSection) resume.getSection(sectionType)).getText());
-                            }
-                            case ACHIEVEMENT, QUALIFICATION -> {
-                                ps.setString(1, sectionType.name());
-                                ps.setString(2, String.join("\n",
-                                        ((ListSection) resume.getSection(sectionType)).getTexts()));
-                            }
+                            case OBJECTIVE, PERSONAL -> ps.setString(2,
+                                    ((TextSection) resume.getSection(sectionType)).getText());
+                            case ACHIEVEMENT, QUALIFICATION -> ps.setString(2, String.join("\n",
+                                    ((ListSection) resume.getSection(sectionType)).getTexts()));
+                            case EXPERIENCE, EDUCATION -> ps.setString(2,
+                                    JsonParser.write(((CompanySection) resume.getSection(sectionType)).getCompanies()));
                         }
                         ps.setString(3, resume.getUuid());
                         ps.addBatch();
@@ -116,6 +118,12 @@ public class SqlHelper {
                         case OBJECTIVE, PERSONAL -> resume.addSection(sectionType, new TextSection(value));
                         case ACHIEVEMENT, QUALIFICATION ->
                                 resume.addSection(sectionType, new ListSection(value.split("\n")));
+                        case EXPERIENCE, EDUCATION -> {
+                            Type companyListType = new TypeToken<List<Company>>() {
+                            }.getType();
+                            resume.addSection(sectionType,
+                                    new CompanySection(JsonParser.read(value, companyListType)));
+                        }
                     }
                     LOG.info("addSectionToResume(): Finish! [%s]: [%s]".formatted(sectionType, value));
                 });

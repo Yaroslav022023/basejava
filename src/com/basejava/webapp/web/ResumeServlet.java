@@ -2,6 +2,7 @@ package com.basejava.webapp.web;
 
 import com.basejava.webapp.exceptions.NotExistStorageException;
 import com.basejava.webapp.model.*;
+import com.basejava.webapp.sql.SqlHelper;
 import com.basejava.webapp.storage.Storage;
 import com.basejava.webapp.util.Config;
 
@@ -11,8 +12,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ResumeServlet extends HttpServlet {
+    private static final Logger LOG = Logger.getLogger(SqlHelper.class.getName());
     private Storage storage;
 
     @Override
@@ -49,7 +59,9 @@ public class ResumeServlet extends HttpServlet {
             }
         }
 
-        for (SectionType type : SectionType.values()) {
+        SectionType[] sectionTypes = {SectionType.OBJECTIVE, SectionType.PERSONAL,
+                SectionType.ACHIEVEMENT, SectionType.QUALIFICATION};
+        for (SectionType type : sectionTypes) {
             String value = request.getParameter(type.name());
             if (value != null && !value.trim().isEmpty()) {
                 SectionType sectionType = SectionType.valueOf(type.name().trim());
@@ -62,6 +74,21 @@ public class ResumeServlet extends HttpServlet {
                 resume.getSections().remove(type);
             }
         }
+
+        CompanySection companySectionExperience = new CompanySection();
+        CompanySection companySectionEducation = new CompanySection();
+        String[] allForms = {"", "2", "3"};
+        for (String form : allForms) {
+            addInformationIntoResume(request, form, companySectionExperience, companySectionEducation, resume);
+        }
+
+        if (companySectionExperience.getCompanies().isEmpty()) {
+            resume.getSections().remove(SectionType.EXPERIENCE);
+        }
+        if (companySectionEducation.getCompanies().isEmpty()) {
+            resume.getSections().remove(SectionType.EDUCATION);
+        }
+
         if (newResume) {
             storage.save(resume);
         } else {
@@ -95,5 +122,74 @@ public class ResumeServlet extends HttpServlet {
         request.getRequestDispatcher(
                 ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
         ).forward(request, response);
+    }
+
+    private String getStringParameter(HttpServletRequest request, SectionType type, String parameter) {
+        return request.getParameter(type.name() + parameter);
+    }
+
+    private LocalDate getDateParameter(HttpServletRequest request, SectionType type, String parameter) {
+        String dateStr = request.getParameter(type.name() + parameter);
+        List<DateTimeFormatter> formatters = Arrays.asList(
+                DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+                DateTimeFormatter.ofPattern("dd-MM-yyyy"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy.MM.dd"),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("yyyy/MM/dd"),
+                DateTimeFormatter.ofPattern("MM.yyyy"),
+                DateTimeFormatter.ofPattern("MM-yyyy"),
+                DateTimeFormatter.ofPattern("MM/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy.MM"),
+                DateTimeFormatter.ofPattern("yyyy-MM"),
+                DateTimeFormatter.ofPattern("yyyy/MM")
+        );
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                if (formatter.toString().contains("dd")) {
+                    return LocalDate.parse(dateStr, formatter);
+                } else {
+                    YearMonth yearMonth = YearMonth.parse(dateStr, formatter);
+                    return yearMonth.atDay(1);
+                }
+            } catch (DateTimeParseException e) {
+            }
+        }
+        LOG.log(Level.WARNING, "Invalid date format: " + dateStr);
+        throw new IllegalArgumentException("Invalid date format: " + dateStr);
+    }
+
+    private void addInformationIntoResume(HttpServletRequest request, String form,
+                                          CompanySection experience, CompanySection education, Resume resume) {
+        SectionType[] sectionTypes = {SectionType.EXPERIENCE, SectionType.EDUCATION};
+        for (SectionType currentType : sectionTypes) {
+            String nameCompany = getStringParameter(request, currentType, ".name" + form);
+            if (nameCompany != null && !nameCompany.trim().isEmpty()) {
+                SectionType sectionTypeCompany = SectionType.valueOf(currentType.name().trim());
+                switch (sectionTypeCompany) {
+                    case EXPERIENCE -> {
+                        experience.addCompany(new Company(
+                                nameCompany,
+                                getStringParameter(request, currentType, ".link" + form),
+                                getStringParameter(request, currentType, ".title" + form),
+                                getDateParameter(request, currentType, ".startDate" + form),
+                                getDateParameter(request, currentType, ".endDate" + form),
+                                getStringParameter(request, currentType, ".description" + form)
+                        ));
+                        resume.addSection(SectionType.EXPERIENCE, experience);
+                    }
+                    case EDUCATION -> {
+                        education.addCompany(new Company(
+                                nameCompany,
+                                getStringParameter(request, currentType, ".link" + form),
+                                getStringParameter(request, currentType, ".title" + form),
+                                getDateParameter(request, currentType, ".startDate" + form),
+                                getDateParameter(request, currentType, ".endDate" + form)
+                        ));
+                        resume.addSection(SectionType.EDUCATION, education);
+                    }
+                }
+            }
+        }
     }
 }

@@ -36,13 +36,28 @@
                     </c:when>
                     <c:when test="${sectionEntry.key == 'ACHIEVEMENT' || sectionEntry.key == 'QUALIFICATION'}">
                         <ul>
-                            <c:forEach var="item" items="${sectionEntry.value.texts}">
-                                <li>${item}</li>
+                            <c:forEach var="listSection" items="${sectionEntry.value.texts}">
+                                <li>${listSection}</li>
                             </c:forEach>
                         </ul>
                     </c:when>
-                    <c:otherwise>
-                    </c:otherwise>
+                    <c:when test="${sectionEntry.key == 'EXPERIENCE' || sectionEntry.key == 'EDUCATION'}">
+                        <ul>
+                            <c:forEach var="company" items="${sectionEntry.value.companies}" varStatus="loop">
+                                <h1 class="company-name"><a href="${company.webSite}">${company.name}</a></h1>
+                                <c:forEach var="period" items="${company.periods}">
+                                    <div class="period">
+                                        <div class="date">${period.startDate} - ${period.endDate}</div>
+                                        <h3 class="experience-title">${period.title}</h3><br>
+                                        <div class="description">${period.description}</div>
+                                    </div>
+                                </c:forEach>
+                                <c:if test="${!loop.last}">
+                                    <hr>
+                                </c:if>
+                            </c:forEach>
+                        </ul>
+                    </c:when>
                 </c:choose>
             </c:if>
         </c:forEach>
