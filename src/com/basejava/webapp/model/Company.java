@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +68,6 @@ public class Company implements Serializable {
 
     public final void addPeriod(String tittle, LocalDate startDate, LocalDate endDate) {
         Objects.requireNonNull(tittle, "tittle must be not null");
-        Objects.requireNonNull(startDate, "startDate must be not null");
 
         for (Period period : periods) {
             if (period.getStartDate().equals(startDate) || period.getEndDate().equals(endDate)) {
@@ -79,7 +80,6 @@ public class Company implements Serializable {
 
     public final void addPeriod(String tittle, LocalDate startDate, LocalDate endDate, String description) {
         Objects.requireNonNull(tittle, "tittle must be not null");
-        Objects.requireNonNull(startDate, "startDate must be not null");
         Objects.requireNonNull(description, "description must be not null");
 
         for (Period period : periods) {
@@ -155,6 +155,16 @@ public class Company implements Serializable {
 
         public final void setDescription(String description) {
             this.description = description;
+        }
+
+        public String getStartDateFormatted() {
+            YearMonth ymStart = YearMonth.from(startDate);
+            return ymStart.format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        }
+
+        public String getEndDateFormatted() {
+            YearMonth ymEnd = YearMonth.from(endDate);
+            return ymEnd.format(DateTimeFormatter.ofPattern("MM/yyyy"));
         }
 
         @Override

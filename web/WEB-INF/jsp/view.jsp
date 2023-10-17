@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -44,10 +45,27 @@
                     <c:when test="${sectionEntry.key == 'EXPERIENCE' || sectionEntry.key == 'EDUCATION'}">
                         <ul>
                             <c:forEach var="company" items="${sectionEntry.value.companies}" varStatus="loop">
-                                <h1 class="company-name"><a href="${company.webSite}">${company.name}</a></h1>
+                                <c:choose>
+                                    <c:when test="${not empty company.webSite}">
+                                        <h1 class="company-name"><a href="${company.webSite}">${company.name}</a></h1>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h1 class="company-name">${company.name}</h1>
+                                    </c:otherwise>
+                                </c:choose>
                                 <c:forEach var="period" items="${company.periods}">
                                     <div class="period">
-                                        <div class="date">${period.startDate} - ${period.endDate}</div>
+                                        <c:if test="${period.getStartDateFormatted() != '01/1970' && period.getEndDateFormatted() != '01/1970'}">
+                                            <c:choose>
+                                                <c:when test="${period.getEndDateFormatted() == '02/1970'}">
+                                                    <div class="date">${period.startDateFormatted} - NOW</div>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div class="date">${period.startDateFormatted}
+                                                        - ${period.endDateFormatted}</div>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:if>
                                         <h3 class="experience-title">${period.title}</h3><br>
                                         <div class="description">${period.description}</div>
                                     </div>

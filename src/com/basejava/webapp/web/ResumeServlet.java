@@ -75,17 +75,30 @@ public class ResumeServlet extends HttpServlet {
             }
         }
 
-        CompanySection companySectionExperience = new CompanySection();
-        CompanySection companySectionEducation = new CompanySection();
-        String[] allForms = {"", "2", "3"};
-        for (String form : allForms) {
-            addInformationIntoResume(request, form, companySectionExperience, companySectionEducation, resume);
+        CompanySection experienceSection = (CompanySection) resume.getSection(SectionType.EXPERIENCE);
+        if (experienceSection != null) {
+            experienceSection.getCompanies().clear();
+        }
+        int i = 0;
+        while (request.getParameter(SectionType.EXPERIENCE.name() + ".name" + i) != null) {
+            addInformationIntoResume(request, String.valueOf(i), experienceSection, SectionType.EXPERIENCE, resume);
+            i++;
         }
 
-        if (companySectionExperience.getCompanies().isEmpty()) {
+        CompanySection educationSection = (CompanySection) resume.getSection(SectionType.EDUCATION);
+        if (educationSection != null) {
+            educationSection.getCompanies().clear();
+        }
+        i = 0;
+        while (request.getParameter(SectionType.EDUCATION.name() + ".name" + i) != null) {
+            addInformationIntoResume(request, String.valueOf(i), educationSection, SectionType.EDUCATION, resume);
+            i++;
+        }
+
+        if (experienceSection != null && experienceSection.getCompanies().isEmpty()) {
             resume.getSections().remove(SectionType.EXPERIENCE);
         }
-        if (companySectionEducation.getCompanies().isEmpty()) {
+        if (educationSection != null && educationSection.getCompanies().isEmpty()) {
             resume.getSections().remove(SectionType.EDUCATION);
         }
 
@@ -114,8 +127,16 @@ public class ResumeServlet extends HttpServlet {
                 response.sendRedirect("resume");
                 return;
             }
-            case "view", "edit" -> resume = storage.get(uuid);
-            case "create" -> resume = new Resume();
+            case "view", "edit" -> {
+                resume = storage.get(uuid);
+                int extraForm = 1;
+                request.setAttribute("extraForm", extraForm);
+            }
+            case "create" -> {
+                resume = new Resume();
+                int extraForm = 1;
+                request.setAttribute("extraForm", extraForm);
+            }
             default -> throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", resume);
@@ -155,39 +176,42 @@ public class ResumeServlet extends HttpServlet {
             } catch (DateTimeParseException e) {
             }
         }
+        if (parameter.matches("^\\.endDate\\d+$") && dateStr.equalsIgnoreCase("Now".trim())) {
+            return LocalDate.of(1970, 2, 2);
+        }
         LOG.log(Level.WARNING, "Invalid date format: " + dateStr);
-        throw new IllegalArgumentException("Invalid date format: " + dateStr);
+        return LocalDate.of(1970, 1, 1);
     }
 
     private void addInformationIntoResume(HttpServletRequest request, String form,
-                                          CompanySection experience, CompanySection education, Resume resume) {
-        SectionType[] sectionTypes = {SectionType.EXPERIENCE, SectionType.EDUCATION};
-        for (SectionType currentType : sectionTypes) {
-            String nameCompany = getStringParameter(request, currentType, ".name" + form);
-            if (nameCompany != null && !nameCompany.trim().isEmpty()) {
-                SectionType sectionTypeCompany = SectionType.valueOf(currentType.name().trim());
-                switch (sectionTypeCompany) {
-                    case EXPERIENCE -> {
-                        experience.addCompany(new Company(
-                                nameCompany,
-                                getStringParameter(request, currentType, ".link" + form),
-                                getStringParameter(request, currentType, ".title" + form),
-                                getDateParameter(request, currentType, ".startDate" + form),
-                                getDateParameter(request, currentType, ".endDate" + form),
-                                getStringParameter(request, currentType, ".description" + form)
-                        ));
-                        resume.addSection(SectionType.EXPERIENCE, experience);
-                    }
-                    case EDUCATION -> {
-                        education.addCompany(new Company(
-                                nameCompany,
-                                getStringParameter(request, currentType, ".link" + form),
-                                getStringParameter(request, currentType, ".title" + form),
-                                getDateParameter(request, currentType, ".startDate" + form),
-                                getDateParameter(request, currentType, ".endDate" + form)
-                        ));
-                        resume.addSection(SectionType.EDUCATION, education);
-                    }
+                                          CompanySection section, SectionType sectionType, Resume resume) {
+        String nameCompany = getStringParameter(request, sectionType, ".name" + form);
+        if (nameCompany != null && !nameCompany.trim().isEmpty()) {
+            SectionType sectionTypeCompany = SectionType.valueOf(sectionType.name().trim());
+            if (section == null) {
+                section = new CompanySection();
+            }
+            switch (sectionTypeCompany) {
+                case EXPERIENCE -> {
+                    section.addCompany(new Company(
+                            nameCompany,
+                            getStringParameter(request, sectionType, ".link" + form),
+                            getStringParameter(request, sectionType, ".title" + form),
+                            getDateParameter(request, sectionType, ".startDate" + form),
+                            getDateParameter(request, sectionType, ".endDate" + form),
+                            getStringParameter(request, sectionType, ".description" + form)
+                    ));
+                    resume.addSection(SectionType.EXPERIENCE, section);
+                }
+                case EDUCATION -> {
+                    section.addCompany(new Company(
+                            nameCompany,
+                            getStringParameter(request, sectionType, ".link" + form),
+                            getStringParameter(request, sectionType, ".title" + form),
+                            getDateParameter(request, sectionType, ".startDate" + form),
+                            getDateParameter(request, sectionType, ".endDate" + form)
+                    ));
+                    resume.addSection(SectionType.EDUCATION, section);
                 }
             }
         }
