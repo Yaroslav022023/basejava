@@ -53,9 +53,10 @@
                                         <h1 class="company-name">${company.name}</h1>
                                     </c:otherwise>
                                 </c:choose>
-                                <c:forEach var="period" items="${company.periods}">
+                                <c:forEach var="period" items="${company.periods}" varStatus="periodStatus">
                                     <div class="period">
-                                        <c:if test="${period.getStartDateFormatted() != '01/1970' && period.getEndDateFormatted() != '01/1970'}">
+                                        <c:if test="${period.getStartDateFormatted() != '01/1970' &&
+                                        period.getEndDateFormatted() != '01/1970'}">
                                             <c:choose>
                                                 <c:when test="${period.getEndDateFormatted() == '02/1970'}">
                                                     <div class="date">${period.startDateFormatted} - NOW</div>
@@ -68,6 +69,9 @@
                                         </c:if>
                                         <h3 class="experience-title">${period.title}</h3><br>
                                         <div class="description">${period.description}</div>
+                                        <c:if test="${!periodStatus.last}">
+                                            <br><br><br>
+                                        </c:if>
                                     </div>
                                 </c:forEach>
                                 <c:if test="${!loop.last}">

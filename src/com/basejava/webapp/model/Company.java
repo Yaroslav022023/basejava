@@ -137,16 +137,16 @@ public class Company implements Serializable {
             return startDate;
         }
 
-        public final void setStartDate(String startDate) {
-            this.startDate = LocalDate.parse(startDate);
+        public final void setStartDate(LocalDate startDate) {
+            this.startDate = startDate;
         }
 
         public final LocalDate getEndDate() {
             return endDate;
         }
 
-        public final void setEndDate(String endDate) {
-            this.endDate = LocalDate.parse(endDate);
+        public final void setEndDate(LocalDate endDate) {
+            this.endDate = endDate;
         }
 
         public final String getDescription() {

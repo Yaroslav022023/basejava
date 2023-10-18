@@ -145,6 +145,39 @@ public class ResumeServlet extends HttpServlet {
         ).forward(request, response);
     }
 
+    private void addInformationIntoResume(HttpServletRequest request, String formNumber,
+                                          CompanySection section, SectionType sectionType, Resume resume) {
+        String nameCompany = getStringParameter(request, sectionType, ".name" + formNumber);
+        if (nameCompany != null && !nameCompany.trim().isEmpty()) {
+            if (section == null) {
+                section = new CompanySection();
+            }
+            Company company = new Company();
+            company.setName(nameCompany);
+            company.setWebSite(getStringParameter(request, sectionType, ".link" + formNumber));
+
+            int i = 0;
+            while (true) {
+                String parameterValue = request.getParameter(sectionType.name() + ".title" + formNumber + "_" + i);
+                if (parameterValue == null || parameterValue.trim().isEmpty()) {
+                    break;
+                }
+                Company.Period period = new Company.Period();
+                String periodNumber = formNumber + "_" + i;
+                period.setTitle(getStringParameter(request, sectionType, ".title" + periodNumber));
+                period.setStartDate(getDateParameter(request, sectionType, ".startDate" + periodNumber));
+                period.setEndDate(getDateParameter(request, sectionType, ".endDate" + periodNumber));
+                if (sectionType.name().equals("EXPERIENCE")) {
+                    period.setDescription(getStringParameter(request, sectionType, ".description" + periodNumber));
+                }
+                company.addPeriod(period);
+                i++;
+            }
+            section.addCompany(company);
+            resume.addSection(sectionType, section);
+        }
+    }
+
     private String getStringParameter(HttpServletRequest request, SectionType type, String parameter) {
         return request.getParameter(type.name() + parameter);
     }
@@ -176,44 +209,10 @@ public class ResumeServlet extends HttpServlet {
             } catch (DateTimeParseException e) {
             }
         }
-        if (parameter.matches("^\\.endDate\\d+$") && dateStr.equalsIgnoreCase("Now".trim())) {
+        if (parameter.matches("^\\.endDate\\d+_\\d+$") && dateStr.equalsIgnoreCase("Now".trim())) {
             return LocalDate.of(1970, 2, 2);
         }
         LOG.log(Level.WARNING, "Invalid date format: " + dateStr);
         return LocalDate.of(1970, 1, 1);
-    }
-
-    private void addInformationIntoResume(HttpServletRequest request, String form,
-                                          CompanySection section, SectionType sectionType, Resume resume) {
-        String nameCompany = getStringParameter(request, sectionType, ".name" + form);
-        if (nameCompany != null && !nameCompany.trim().isEmpty()) {
-            SectionType sectionTypeCompany = SectionType.valueOf(sectionType.name().trim());
-            if (section == null) {
-                section = new CompanySection();
-            }
-            switch (sectionTypeCompany) {
-                case EXPERIENCE -> {
-                    section.addCompany(new Company(
-                            nameCompany,
-                            getStringParameter(request, sectionType, ".link" + form),
-                            getStringParameter(request, sectionType, ".title" + form),
-                            getDateParameter(request, sectionType, ".startDate" + form),
-                            getDateParameter(request, sectionType, ".endDate" + form),
-                            getStringParameter(request, sectionType, ".description" + form)
-                    ));
-                    resume.addSection(SectionType.EXPERIENCE, section);
-                }
-                case EDUCATION -> {
-                    section.addCompany(new Company(
-                            nameCompany,
-                            getStringParameter(request, sectionType, ".link" + form),
-                            getStringParameter(request, sectionType, ".title" + form),
-                            getDateParameter(request, sectionType, ".startDate" + form),
-                            getDateParameter(request, sectionType, ".endDate" + form)
-                    ));
-                    resume.addSection(SectionType.EDUCATION, section);
-                }
-            }
-        }
     }
 }
