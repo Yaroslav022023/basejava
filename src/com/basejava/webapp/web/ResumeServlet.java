@@ -158,19 +158,22 @@ public class ResumeServlet extends HttpServlet {
 
             int i = 0;
             while (true) {
+                Company.Period period = new Company.Period();
                 String parameterValue = request.getParameter(sectionType.name() + ".title" + formNumber + "_" + i);
                 if (parameterValue == null || parameterValue.trim().isEmpty()) {
                     break;
                 }
-                Company.Period period = new Company.Period();
                 String periodNumber = formNumber + "_" + i;
                 period.setTitle(getStringParameter(request, sectionType, ".title" + periodNumber));
                 period.setStartDate(getDateParameter(request, sectionType, ".startDate" + periodNumber));
                 period.setEndDate(getDateParameter(request, sectionType, ".endDate" + periodNumber));
                 if (sectionType.name().equals("EXPERIENCE")) {
-                    period.setDescription(getStringParameter(request, sectionType, ".description" + periodNumber));
+                    period.setDescription(getStringParameter(request, sectionType,
+                            ".description" + periodNumber));
                 }
-                company.addPeriod(period);
+                if (parameterValue != null && !parameterValue.trim().isEmpty()) {
+                    company.addPeriod(period);
+                }
                 i++;
             }
             section.addCompany(company);

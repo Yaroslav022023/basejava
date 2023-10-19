@@ -67,7 +67,7 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:if>
-                                        <h3 class="experience-title">${period.title}</h3><br>
+                                        <h3 class="experience-title">${period.title}</h3>
                                         <div class="description">${period.description}</div>
                                         <c:if test="${!periodStatus.last}">
                                             <br><br><br>

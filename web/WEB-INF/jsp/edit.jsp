@@ -80,84 +80,117 @@
                                                size=30
                                                value="${company.webSite}"
                                                placeholder="website"></dd>
-                                    <c:forEach var="period" items="${company.periods}" varStatus="periodStatus">
-                                        <c:set var="periodNumber" value="${formStatus.index}_${periodStatus.index}"/>
-                                        <br>
-                                        <dd><input type="text"
-                                                   id="periodStartDate"
-                                                   name="${type.name()}.startDate${periodNumber}"
-                                                   size=30
-                                        <c:choose>
-                                        <c:when test="${period.getStartDateFormatted() != '01/1970'}">
-                                                   value="${period.getStartDateFormatted()}"
+                                    <c:choose>
+                                        <c:when test="${company.periods.size() > 0}">
+                                            <c:forEach var="period" items="${company.periods}" varStatus="periodStatus">
+                                                <c:set var="periodNumber"
+                                                       value="${formStatus.index}_${periodStatus.index}"/>
+                                                <br>
+                                                <dd><input type="text"
+                                                           id="periodStartDate"
+                                                           name="${type.name()}.startDate${periodNumber}"
+                                                           size=30
+                                                <c:choose>
+                                                <c:when test="${period.getStartDateFormatted() != '01/1970'}">
+                                                           value="${period.getStartDateFormatted()}"
+                                                </c:when>
+                                                <c:otherwise>
+                                                           value=""
+                                                </c:otherwise>
+                                                </c:choose>
+                                                           placeholder="Start date: MM/YYYY"></dd>
+                                                <dd><input type="text"
+                                                           id="periodEndDate"
+                                                           name="${type.name()}.endDate${periodNumber}"
+                                                           size=30
+                                                <c:choose>
+                                                <c:when test="${period.getEndDateFormatted() != '01/1970' &&
+                                                period.getEndDateFormatted() != '02/1970'}">
+                                                           value="${period.getEndDateFormatted()}"
+                                                </c:when>
+                                                <c:when test="${period.getEndDateFormatted() == '01/1970'}">
+                                                           value=""
+                                                </c:when>
+                                                <c:when test="${period.getEndDateFormatted() == '02/1970'}">
+                                                           value="NOW"
+                                                </c:when>
+                                                </c:choose>
+                                                           placeholder="End date: MM/YYYY or write 'Now'"></dd>
+                                                <br>
+                                                <dd><input type="text"
+                                                           id="periodTitle"
+                                                           name="${type.name()}.title${periodNumber}"
+                                                           size=30
+                                                           value="${period.title}"
+                                                           placeholder="title"></dd>
+                                                <br>
+                                                <c:if test="${type.name() == 'EXPERIENCE'}">
+                                                    <dd><input type="text"
+                                                               id="periodDescription"
+                                                               name="${type.name()}.description${periodNumber}"
+                                                               size=30 value="${period.description}"
+                                                               placeholder="description"></dd>
+                                                    <br>
+                                                </c:if>
+                                                <c:if test="${periodStatus.last}">
+                                                    <br>
+                                                    <dd><input type="text"
+                                                               id="periodStartDate3"
+                                                               name="${type.name()}.startDate${formStatus.index}_${periodStatus.index + 1}"
+                                                               size=30
+                                                               placeholder="Start date: MM/YYYY"></dd>
+                                                    <dd><input type="text"
+                                                               id="periodEndDate3"
+                                                               name="${type.name()}.endDate${formStatus.index}_${periodStatus.index + 1}"
+                                                               size=30
+                                                               placeholder="End date: MM/YYYY or write 'Now'"></dd>
+                                                    <br>
+                                                    <dd><input type="text"
+                                                               id="periodTitle3"
+                                                               name="${type.name()}.title${formStatus.index}_${periodStatus.index + 1}"
+                                                               size=30
+                                                               placeholder="title"></dd>
+                                                    <br>
+                                                    <c:if test="${type.name() == 'EXPERIENCE'}">
+                                                        <dd><input type="text"
+                                                                   id="periodDescription3"
+                                                                   name="${type.name()}.description${formStatus.index}_${periodStatus.index + 1}"
+                                                                   size=30
+                                                                   placeholder="description"></dd>
+                                                        <br>
+                                                    </c:if>
+                                                </c:if>
+                                            </c:forEach>
                                         </c:when>
                                         <c:otherwise>
-                                                   value=""
-                                        </c:otherwise>
-                                        </c:choose>
-                                                   placeholder="Start date: MM/YYYY"></dd>
-                                        <dd><input type="text"
-                                                   id="periodEndDate"
-                                                   name="${type.name()}.endDate${periodNumber}"
-                                                   size=30
-                                        <c:choose>
-                                        <c:when test="${period.getEndDateFormatted() != '01/1970' &&
-                                        period.getEndDateFormatted() != '02/1970'}">
-                                                   value="${period.getEndDateFormatted()}"
-                                        </c:when>
-                                        <c:when test="${period.getEndDateFormatted() == '01/1970'}">
-                                                   value=""
-                                        </c:when>
-                                        <c:when test="${period.getEndDateFormatted() == '02/1970'}">
-                                                   value="NOW"
-                                        </c:when>
-                                        </c:choose>
-                                                   placeholder="End date: MM/YYYY or write 'Now'"></dd>
-                                        <br>
-                                        <dd><input type="text"
-                                                   id="periodTitle"
-                                                   name="${type.name()}.title${periodNumber}"
-                                                   size=30
-                                                   value="${period.title}"
-                                                   placeholder="title"></dd>
-                                        <br>
-                                        <c:if test="${type.name() == 'EXPERIENCE'}">
-                                            <dd><input type="text"
-                                                       id="periodDescription"
-                                                       name="${type.name()}.description${periodNumber}"
-                                                       size=30 value="${period.description}"
-                                                       placeholder="description"></dd>
-                                            <br>
-                                        </c:if>
-                                        <c:if test="${periodStatus.last}">
                                             <br>
                                             <dd><input type="text"
-                                                       id="periodStartDate3"
-                                                       name="${type.name()}.startDate${formStatus.index}_${company.periods.size()}"
+                                                       id="periodStartDate4"
+                                                       name="${type.name()}.startDate${formStatus.index}_0"
                                                        size=30
                                                        placeholder="Start date: MM/YYYY"></dd>
                                             <dd><input type="text"
-                                                       id="periodEndDate3"
-                                                       name="${type.name()}.endDate${formStatus.index}_${company.periods.size()}"
+                                                       id="periodEndDate4"
+                                                       name="${type.name()}.endDate${formStatus.index}_0"
                                                        size=30
                                                        placeholder="End date: MM/YYYY or write 'Now'"></dd>
                                             <br>
                                             <dd><input type="text"
-                                                       id="periodTitle3"
-                                                       name="${type.name()}.title${formStatus.index}_${company.periods.size()}"
+                                                       id="periodTitle4"
+                                                       name="${type.name()}.title${formStatus.index}_0"
                                                        size=30
                                                        placeholder="title"></dd>
                                             <br>
                                             <c:if test="${type.name() == 'EXPERIENCE'}">
                                                 <dd><input type="text"
-                                                           id="periodDescription3"
-                                                           name="${type.name()}.description${formStatus.index}_${company.periods.size()}"
+                                                           id="periodDescription4"
+                                                           name="${type.name()}.description${formStatus.index}_0"
                                                            size=30
                                                            placeholder="description"></dd>
                                                 <br>
                                             </c:if>
-                                        </c:if>
-                                    </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:when>
                                 <c:otherwise>
                                     <dd><input type="text"

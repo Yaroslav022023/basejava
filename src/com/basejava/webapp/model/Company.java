@@ -23,7 +23,8 @@ public class Company implements Serializable {
     private String webSite;
     private final List<Period> periods = new ArrayList<>();
 
-    public Company() {}
+    public Company() {
+    }
 
     public Company(String name, String webSite, String tittle, LocalDate startDate,
                    LocalDate endDate, String description) {
@@ -100,7 +101,7 @@ public class Company implements Serializable {
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Period implements Serializable{
+    public static class Period implements Serializable {
         @Serial
         private static final long serialVersionUID = 1L;
         private String title;
@@ -110,7 +111,8 @@ public class Company implements Serializable {
         private LocalDate endDate;
         private String description;
 
-        public Period() {}
+        public Period() {
+        }
 
         public Period(String title, LocalDate startDate, LocalDate dateEnd, String description) {
             this.title = title;
