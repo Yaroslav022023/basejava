@@ -8,7 +8,7 @@
     <title>List resumes</title>
 </head>
 <body>
-<jsp:include page="fragments/header.jsp"/>
+<jsp:include page="fragments/headerWithoutLink.jsp"/>
 <section class="content-section">
     <div class="button-and-table-container">
         <div class="button-container">
@@ -34,6 +34,7 @@
                 </tr>
             </c:forEach>
         </table>
+    </div>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
