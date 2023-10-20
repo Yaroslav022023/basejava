@@ -16,7 +16,19 @@
         <c:forEach var="contactEntry" items="${resume.contacts}">
             <jsp:useBean id="contactEntry"
                          type="java.util.Map.Entry<com.basejava.webapp.model.ContactType, java.lang.String>"/>
-            <c:out value="${contactEntry.key.toHtml(contactEntry.value)}" escapeXml="false"/><br/>
+        <c:choose>
+        <c:when test="${contactEntry.key.name() == 'URL_HOMEPAGE'}">
+        <span style="background: url(/resumes/img/home.png) no-repeat center left; padding-left: 20px; display: inline-block;">
+            <a href="${contactEntry.value}" target="_blank">
+                <c:out value="${contactEntry.key.toHtml(contactEntry.value)}" escapeXml="false"/>
+            </a>
+        </span>
+        </c:when>
+        <c:otherwise>
+            <c:out value="${contactEntry.key.toHtml(contactEntry.value)}" escapeXml="false"/>
+        </c:otherwise>
+        </c:choose>
+        <br/>
         </c:forEach>
     <p>
     <hr>
@@ -34,6 +46,7 @@
                 <c:choose>
                     <c:when test="${sectionEntry.key == 'OBJECTIVE' || sectionEntry.key == 'PERSONAL'}">
                         ${sectionEntry.value}
+                        <br><br>
                     </c:when>
                     <c:when test="${sectionEntry.key == 'ACHIEVEMENT' || sectionEntry.key == 'QUALIFICATION'}">
                         <ul>
@@ -41,6 +54,7 @@
                                 <li>${listSection}</li>
                             </c:forEach>
                         </ul>
+                        <br>
                     </c:when>
                     <c:when test="${sectionEntry.key == 'EXPERIENCE' || sectionEntry.key == 'EDUCATION'}">
                         <ul>
@@ -79,6 +93,7 @@
                                 </c:if>
                             </c:forEach>
                         </ul>
+                        <br>
                     </c:when>
                 </c:choose>
             </c:if>
