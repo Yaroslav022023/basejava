@@ -1,3 +1,5 @@
+CREATE DATABASE resumes;
+
 CREATE TABLE resume
 (
     uuid      CHAR(36) PRIMARY KEY NOT NULL,
