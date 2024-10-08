@@ -18,8 +18,6 @@
 - Unit Testing (JUnit)
 - Version Control System (Git)
 
--------------------------------------------------------------
-
 ### Achievements:
 
 - Developed a "Resume Database" application, using core technologies and
